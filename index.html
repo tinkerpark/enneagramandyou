@@ -9,24 +9,21 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
     --bg: #1e1e1c;
-    --bg-2: #252522;
-    --bg-3: #2e2e2a;
+    --bg2: #252522;
+    --bg3: #2e2e2a;
     --surface: #2a2a27;
     --border: rgba(255,255,255,0.08);
-    --border-hover: rgba(255,255,255,0.18);
+    --border-h: rgba(255,255,255,0.18);
     --text: #e8e4dc;
-    --text-soft: #9e9a92;
-    --text-faint: #5a5750;
+    --soft: #9e9a92;
+    --faint: #5a5750;
     --accent: #e8876a;
-    --accent-dim: rgba(232,135,106,0.15);
-    --accent-dim2: rgba(232,135,106,0.08);
+    --accent-bg: rgba(232,135,106,0.08);
+    --accent-bg2: rgba(232,135,106,0.15);
   }
-
   html { font-size: 16px; }
-
   body {
     background: var(--bg);
     color: var(--text);
@@ -37,579 +34,1253 @@
     flex-direction: column;
     overflow-x: hidden;
   }
-
-  /* Subtle grain texture overlay */
   body::before {
     content: '';
     position: fixed;
     inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
     pointer-events: none;
     z-index: 0;
     opacity: 0.4;
   }
-
-  /* Header */
   .site-header {
-    position: relative;
-    z-index: 10;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    position: relative; z-index: 10;
+    display: flex; justify-content: space-between; align-items: center;
     padding: 1.5rem 2.5rem;
     border-bottom: 1px solid var(--border);
   }
-
-  .logo {
-    font-size: 0.75rem;
-    font-weight: 400;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--text-soft);
-  }
-
-  .progress-pill {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.72rem;
-    color: var(--text-faint);
-    letter-spacing: 0.08em;
-  }
-
-  .progress-dots {
-    display: flex;
-    gap: 4px;
-  }
-
-  .dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--border-hover);
-    transition: background 0.3s;
-  }
-
+  .logo { font-size: 0.75rem; font-weight: 400; letter-spacing: 0.16em; text-transform: uppercase; color: var(--soft); }
+  .hdr-right { display: flex; align-items: center; gap: 8px; }
+  .progress-dots { display: flex; gap: 4px; }
+  .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border-h); transition: background 0.3s; }
   .dot.done { background: var(--accent); }
-  .dot.current { background: var(--text-soft); }
-
-  /* Main layout */
-  main {
-    flex: 1;
-    position: relative;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 0 1.5rem 4rem;
-  }
-
-  /* Screens */
+  .dot.cur { background: var(--soft); }
+  .hdr-label { font-size: 0.68rem; color: var(--faint); letter-spacing: 0.08em; }
+  main { flex: 1; position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; padding: 0 1.5rem 4rem; }
   .screen { width: 100%; max-width: 640px; }
 
-  /* ── INTRO ── */
-  .intro {
-    padding-top: clamp(4rem, 10vh, 8rem);
-    animation: fadeUp 0.6s ease forwards;
-  }
-
-  .intro-eyebrow {
-    font-size: 0.7rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 1.5rem;
-  }
-
-  .intro-title {
-    font-size: clamp(2.6rem, 6vw, 4.2rem);
-    font-weight: 600;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    margin-bottom: 1.5rem;
-    color: var(--text);
-  }
-
+  /* INTRO */
+  .intro { padding-top: clamp(4rem, 10vh, 8rem); animation: fadeUp 0.6s ease forwards; }
+  .eyebrow { font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem; }
+  .intro-title { font-size: clamp(2.6rem, 6vw, 4.2rem); font-weight: 600; line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 1.5rem; }
   .intro-title span { color: var(--accent); }
+  .intro-sub { font-size: 0.95rem; line-height: 1.8; color: var(--soft); max-width: 440px; margin-bottom: 3rem; }
+  .intro-meta { display: flex; gap: 1.5rem; margin-bottom: 3rem; }
+  .meta-item { display: flex; flex-direction: column; gap: 2px; }
+  .meta-val { font-size: 1.4rem; font-weight: 500; }
+  .meta-lbl { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); }
 
-  .intro-sub {
-    font-size: 0.95rem;
-    line-height: 1.8;
-    color: var(--text-soft);
-    max-width: 440px;
-    margin-bottom: 3rem;
-  }
-
-  .intro-meta {
-    display: flex;
-    gap: 1.5rem;
-    margin-bottom: 3rem;
-  }
-
-  .meta-item {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .meta-val {
-    font-size: 1.4rem;
-    font-weight: 500;
-    color: var(--text);
-  }
-
-  .meta-label {
-    font-size: 0.68rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-  }
-
-  /* ── QUIZ ── */
-  .quiz {
-    padding-top: 3rem;
-  }
-
-  .quiz-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    margin-bottom: 2.5rem;
-  }
-
-  .quiz-type-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: var(--accent);
-    color: var(--bg);
-    font-size: 1rem;
-    font-weight: 600;
-    flex-shrink: 0;
-  }
-
+  /* QUIZ */
+  .quiz { padding-top: 3rem; }
+  .progress-bar { width: 100%; height: 1px; background: var(--border); margin-bottom: 2rem; position: relative; }
+  .progress-fill { position: absolute; left: 0; top: 0; height: 100%; background: var(--accent); transition: width 0.5s cubic-bezier(0.4,0,0.2,1); }
+  .quiz-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 2.5rem; }
+  .quiz-badge { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: var(--accent); color: var(--bg); font-size: 1rem; font-weight: 600; flex-shrink: 0; }
   .quiz-title-block { flex: 1; padding-left: 1rem; }
-
-  .quiz-eyebrow {
-    font-size: 0.68rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    margin-bottom: 0.3rem;
-  }
-
-  .quiz-heading {
-    font-size: clamp(1.4rem, 3.5vw, 2rem);
-    font-weight: 500;
-    letter-spacing: -0.01em;
-    line-height: 1.2;
-    color: var(--text);
-  }
-
-  /* Progress bar */
-  .progress-bar {
-    width: 100%;
-    height: 1px;
-    background: var(--border);
-    margin-bottom: 2rem;
-    position: relative;
-  }
-
-  .progress-bar-fill {
-    position: absolute;
-    left: 0; top: 0;
-    height: 100%;
-    background: var(--accent);
-    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
-  }
-
-  /* Statements */
-  .statements { display: flex; flex-direction: column; gap: 2px; }
-
-  .statement {
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1rem 1.1rem;
-    margin-bottom: 6px;
-    transition: border-color 0.2s, background 0.2s;
-    background: transparent;
-  }
-
-  .statement.answered {
-    border-color: rgba(232,135,106,0.2);
-    background: var(--accent-dim2);
-  }
-
-  .stmt-text {
-    font-size: 0.88rem;
-    line-height: 1.55;
-    color: var(--text-soft);
-    margin-bottom: 0.75rem;
-    transition: color 0.2s;
-  }
-
+  .quiz-sub { font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); margin-bottom: 0.3rem; }
+  .quiz-heading { font-size: clamp(1.4rem, 3.5vw, 2rem); font-weight: 500; letter-spacing: -0.01em; line-height: 1.2; }
+  .statements { display: flex; flex-direction: column; gap: 6px; }
+  .statement { border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.1rem; transition: border-color 0.2s, background 0.2s; }
+  .statement.answered { border-color: rgba(232,135,106,0.2); background: var(--accent-bg); }
+  .stmt-text { font-size: 0.88rem; line-height: 1.55; color: var(--soft); margin-bottom: 0.75rem; transition: color 0.2s; }
   .statement.answered .stmt-text { color: var(--text); }
-
-  .opts {
-    display: flex;
-    gap: 6px;
-  }
-
-  .opt {
-    flex: 1;
-    padding: 7px 4px;
-    font-family: 'Sora', sans-serif;
-    font-size: 0.68rem;
-    font-weight: 400;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    background: transparent;
-    color: var(--text-faint);
-    cursor: pointer;
-    transition: all 0.15s;
-    text-align: center;
-  }
-
-  .opt:hover { border-color: var(--border-hover); color: var(--text-soft); background: var(--bg-3); }
+  .opts { display: flex; gap: 6px; }
+  .opt { flex: 1; padding: 7px 4px; font-family: 'Sora', sans-serif; font-size: 0.68rem; font-weight: 400; letter-spacing: 0.07em; text-transform: uppercase; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: var(--faint); cursor: pointer; transition: all 0.15s; text-align: center; }
+  .opt:hover { border-color: var(--border-h); color: var(--soft); background: var(--bg3); }
   .opt.selected.agree { background: var(--accent); border-color: var(--accent); color: var(--bg); }
-  .opt.selected.neutral { background: var(--bg-3); border-color: var(--border-hover); color: var(--text); }
+  .opt.selected.neutral { background: var(--bg3); border-color: var(--border-h); color: var(--text); }
   .opt.selected.disagree { background: transparent; border-color: var(--accent); color: var(--accent); }
-
-  /* Nav */
-  .nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border);
-  }
-
-  .btn {
-    font-family: 'Sora', sans-serif;
-    font-size: 0.78rem;
-    font-weight: 400;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 12px 28px;
-    border-radius: 100px;
-    border: 1px solid var(--border-hover);
-    background: transparent;
-    color: var(--text-soft);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .btn:hover { border-color: var(--text-soft); color: var(--text); }
+  .nav { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+  .btn { font-family: 'Sora', sans-serif; font-size: 0.78rem; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; padding: 12px 28px; border-radius: 100px; border: 1px solid var(--border-h); background: transparent; color: var(--soft); cursor: pointer; transition: all 0.2s; }
+  .btn:hover { border-color: var(--soft); color: var(--text); }
   .btn:disabled { opacity: 0.2; cursor: default; pointer-events: none; }
-
-  .btn.primary {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: var(--bg);
-    font-weight: 500;
-  }
-
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); font-weight: 500; }
   .btn.primary:hover { background: #f09a7e; border-color: #f09a7e; }
+  .incomplete-hint { font-size: 0.7rem; color: var(--faint); letter-spacing: 0.06em; }
 
-  .incomplete-hint {
-    font-size: 0.7rem;
-    color: var(--text-faint);
-    letter-spacing: 0.06em;
-  }
+  /* TIEBREAKER */
+  .tiebreak { padding-top: 3rem; }
+  .tiebreak-header { margin-bottom: 2rem; }
+  .tiebreak-eyebrow { font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem; }
+  .tiebreak-heading { font-size: clamp(1.4rem, 3.5vw, 2rem); font-weight: 500; letter-spacing: -0.01em; line-height: 1.25; margin-bottom: 0.75rem; }
+  .tiebreak-sub { font-size: 0.85rem; color: var(--soft); line-height: 1.7; }
+  .scenario { border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.25rem 1rem; margin-bottom: 1rem; }
+  .scenario-num { font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); margin-bottom: 0.6rem; }
+  .scenario-text { font-size: 0.92rem; line-height: 1.6; color: var(--text); margin-bottom: 1rem; }
+  .scenario-opts { display: flex; flex-direction: column; gap: 6px; }
+  .scen-opt { padding: 0.85rem 1rem; font-family: 'Sora', sans-serif; font-size: 0.82rem; line-height: 1.5; font-weight: 300; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--soft); cursor: pointer; text-align: left; transition: all 0.15s; }
+  .scen-opt:hover { border-color: var(--border-h); color: var(--text); background: var(--bg3); }
+  .scen-opt.selected { background: var(--accent-bg2); border-color: rgba(232,135,106,0.4); color: var(--text); }
+  .tb-progress { font-size: 0.68rem; color: var(--faint); letter-spacing: 0.06em; }
 
-  /* ── RESULT ── */
-  .result {
-    padding-top: 3rem;
-    animation: fadeUp 0.6s ease forwards;
-  }
+  /* RESULT */
+  .result { padding-top: 3rem; animation: fadeUp 0.6s ease forwards; }
+  .result-circle-wrap { display: flex; justify-content: center; margin-bottom: 2.5rem; }
+  .result-circle { width: 120px; height: 120px; border-radius: 50%; border: 1px solid rgba(232,135,106,0.3); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+  .result-circle::before { content: ''; position: absolute; inset: -20px; border-radius: 50%; border: 1px solid var(--border); }
+  .result-circle-num { font-size: 2.8rem; font-weight: 600; color: var(--accent); line-height: 1; letter-spacing: -0.03em; }
+  .result-circle-lbl { font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
+  .result-connector { width: 1px; height: 40px; background: linear-gradient(to bottom, rgba(232,135,106,0.5), transparent); margin: 0 auto 2rem; }
+  .result-name { font-size: clamp(2rem, 5vw, 3rem); font-weight: 600; letter-spacing: -0.02em; text-align: center; margin-bottom: 0.5rem; }
+  .result-tagline { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); text-align: center; margin-bottom: 0.75rem; }
+  .result-pct { font-size: 0.85rem; color: var(--soft); text-align: center; margin-bottom: 2rem; }
+  .result-pct strong { color: var(--accent); font-weight: 500; }
+  .result-desc { font-size: 0.92rem; line-height: 1.8; color: var(--soft); text-align: center; max-width: 500px; margin: 0 auto 2.5rem; padding: 1.5rem; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+  .breakdown-label { font-size: 0.65rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint); margin-bottom: 1rem; text-align: center; }
+  .type-cards { display: flex; flex-direction: column; gap: 4px; margin-bottom: 2.5rem; }
+  .type-card { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; cursor: pointer; transition: border-color 0.2s; }
+  .type-card:hover { border-color: var(--border-h); }
+  .type-card.expanded { border-color: rgba(232,135,106,0.3); }
+  .type-card-header { display: grid; grid-template-columns: 36px 1fr auto; align-items: center; gap: 12px; padding: 0.85rem 1rem; }
+  .tc-num { font-size: 0.9rem; font-weight: 600; color: var(--faint); transition: color 0.2s; }
+  .type-card.expanded .tc-num { color: var(--accent); }
+  .tc-info { display: flex; flex-direction: column; gap: 2px; }
+  .tc-name { font-size: 0.82rem; font-weight: 400; color: var(--soft); transition: color 0.2s; }
+  .type-card.expanded .tc-name { color: var(--text); }
+  .tc-bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .tc-bar-track { width: 80px; height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .tc-bar-fill { height: 100%; background: var(--faint); border-radius: 2px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1), background 0.3s; }
+  .type-card.expanded .tc-bar-fill { background: var(--accent); }
+  .tc-pct { font-size: 0.72rem; color: var(--faint); min-width: 36px; text-align: right; transition: color 0.2s; }
+  .type-card.expanded .tc-pct { color: var(--accent); }
+  .type-card-body { overflow: hidden; max-height: 0; transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1); }
+  .type-card.expanded .type-card-body { max-height: 300px; }
+  .type-card-desc { padding: 0 1rem 1rem; font-size: 0.84rem; line-height: 1.75; color: var(--soft); border-top: 1px solid var(--border); padding-top: 0.85rem; }
+  .result-footer { display: flex; justify-content: center; padding-top: 1rem; border-top: 1px solid var(--border); }
+  .retake { font-family: 'Sora', sans-serif; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; background: none; border: none; color: var(--faint); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; padding: 0; }
+  .retake:hover { color: var(--text); }
 
-  .result-circle-wrap {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 2.5rem;
-    position: relative;
-  }
-
-  .result-circle {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    border: 1px solid rgba(232,135,106,0.3);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-  }
-
-  /* Decorative ring */
-  .result-circle::before {
-    content: '';
-    position: absolute;
-    inset: -20px;
-    border-radius: 50%;
-    border: 1px solid var(--border);
-  }
-
-  .result-circle-num {
-    font-size: 2.8rem;
-    font-weight: 600;
-    color: var(--accent);
-    line-height: 1;
-    letter-spacing: -0.03em;
-  }
-
-  .result-circle-label {
-    font-size: 0.6rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-  }
-
-  /* Connector line from circle */
-  .result-connector {
-    width: 1px;
-    height: 40px;
-    background: linear-gradient(to bottom, rgba(232,135,106,0.5), transparent);
-    margin: 0 auto 2rem;
-  }
-
-  .result-name {
-    font-size: clamp(2rem, 5vw, 3rem);
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    text-align: center;
-    color: var(--text);
-    margin-bottom: 0.5rem;
-  }
-
-  .result-tagline {
-    font-size: 0.72rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--accent);
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-
-  .result-desc {
-    font-size: 0.92rem;
-    line-height: 1.8;
-    color: var(--text-soft);
-    text-align: center;
-    max-width: 500px;
-    margin: 0 auto 3rem;
-    padding: 1.5rem;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    background: var(--surface);
-  }
-
-  /* Score breakdown */
-  .scores-section {
-    margin-bottom: 3rem;
-  }
-
-  .scores-eyebrow {
-    font-size: 0.65rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    margin-bottom: 1.25rem;
-    text-align: center;
-  }
-
-  .score-rows { display: flex; flex-direction: column; gap: 10px; }
-
-  .score-row {
-    display: grid;
-    grid-template-columns: 28px 1fr 100px 32px;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .sr-num {
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--text-faint);
-    text-align: center;
-  }
-
-  .score-row.top .sr-num { color: var(--accent); }
-
-  .sr-name {
-    font-size: 0.78rem;
-    color: var(--text-soft);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .score-row.top .sr-name { color: var(--text); }
-
-  .sr-track {
-    height: 2px;
-    background: var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-
-  .sr-fill {
-    height: 100%;
-    background: var(--text-faint);
-    border-radius: 2px;
-    transition: width 1s cubic-bezier(0.4,0,0.2,1);
-  }
-
-  .score-row.top .sr-fill { background: var(--accent); }
-
-  .sr-val {
-    font-size: 0.72rem;
-    color: var(--text-faint);
-    text-align: right;
-    font-weight: 500;
-  }
-
-  .result-footer {
-    display: flex;
-    justify-content: center;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border);
-  }
-
-  .tie-note {
-    font-size: 0.78rem;
-    line-height: 1.7;
-    color: var(--text-faint);
-    text-align: center;
-    font-style: italic;
-    margin-bottom: 2rem;
-    padding: 0 1rem;
-  }
-
-  /* Animations */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Mobile */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   @media (max-width: 520px) {
-    .site-header { padding: 1.25rem 1.25rem; }
+    .site-header { padding: 1.25rem; }
     main { padding: 0 1rem 3rem; }
     .intro { padding-top: 2.5rem; }
-    .score-row { grid-template-columns: 24px 1fr 70px 28px; gap: 8px; }
     .opts { gap: 4px; }
     .opt { font-size: 0.62rem; padding: 7px 2px; }
     .intro-meta { gap: 1rem; }
+    .tc-bar-track { width: 50px; }
   }
 </style>
 </head>
 <body>
-
 <header class="site-header">
   <div class="logo">Enneagram &amp; You</div>
-  <div class="progress-pill" id="hdr-dots"></div>
+  <div class="hdr-right" id="hdr-right"></div>
 </header>
-
-<main>
-  <div id="root"></div>
-</main>
-
+<main><div id="root"></div></main>
 <script>
+/* ─── STRUCTURE ─────────────────────────────────────────────────────────── */
+
+const WINGS = {
+  1: [9, 2], 2: [1, 3], 3: [2, 4], 4: [3, 5], 5: [4, 6],
+  6: [5, 7], 7: [6, 8], 8: [7, 9], 9: [8, 1]
+};
+const TRIADS = {
+  gut: [8, 9, 1], heart: [2, 3, 4], head: [5, 6, 7]
+};
+function triadOf(t) {
+  for (const [name, types] of Object.entries(TRIADS)) {
+    if (types.includes(t)) return name;
+  }
+  return null;
+}
+
+/* ─── TYPE DATA ─────────────────────────────────────────────────────────── */
+
+const TYPES = {
+  1: {
+    name: 'The Reformer', tagline: 'Principled · Purposeful · Self-Controlled',
+    desc: 'Ones are driven by an inner conviction that the world can be better — and that they are responsible for making it so. Their fierce commitment to integrity and correctness is the same force that fuels their private self-criticism; the standard they hold others to is nothing compared to the one they hold themselves to. At their best, they are wise, discerning, and morally courageous.'
+  },
+  2: {
+    name: 'The Helper', tagline: 'Generous · Demonstrative · People-Pleasing',
+    desc: 'Twos attune to what people need with almost uncanny precision, and they move to meet those needs before being asked. Their generosity is real — and it is also bound up with a deep desire to be loved and indispensable. The work for a Two is learning to name their own needs with the same clarity they bring to everyone else\'s.'
+  },
+  3: {
+    name: 'The Achiever', tagline: 'Adaptable · Excelling · Driven',
+    desc: 'Threes are engines of productivity who instinctively read any room and calibrate themselves to win its approval. Success isn\'t just a goal — it\'s the proof that they have value. They are often the most effective people in the building. The question that follows them quietly is who they are when there is nothing left to achieve.'
+  },
+  4: {
+    name: 'The Individualist', tagline: 'Sensitive · Introspective · Expressive',
+    desc: 'Fours experience the world with unusual emotional depth and seek meaning in everything they encounter. Identity and authenticity are paramount — they would rather be misunderstood than perform a self that isn\'t true. They carry both a remarkable creative sensitivity and a persistent feeling that something essential is missing, which is both their wound and their gift.'
+  },
+  5: {
+    name: 'The Investigator', tagline: 'Perceptive · Innovative · Secretive',
+    desc: 'Fives live primarily in the mind. They conserve energy, guard their privacy, and accumulate knowledge as their primary resource. Social contact costs them in ways others rarely see. What reads as detachment is usually concentration — Fives need to fully understand something before they can engage with it, and when they engage, they go very deep.'
+  },
+  6: {
+    name: 'The Loyalist', tagline: 'Committed · Security-Oriented · Engaging',
+    desc: 'Sixes are acutely attuned to what could go wrong — and that vigilance makes them loyal, prepared, and deeply trustworthy partners. They think through risk carefully before acting and take their commitments seriously. Trust is not given quickly, but once earned it holds. Their challenge is learning to trust their own judgment as much as they trust the people they love.'
+  },
+  7: {
+    name: 'The Enthusiast', tagline: 'Spontaneous · Versatile · Acquisitive',
+    desc: 'Sevens move through the world with appetite and momentum. They generate ideas and experiences continuously, resist being pinned down, and reframe difficulty with remarkable speed. Their optimism is genuine and contagious. The shadow side is the avoidance of pain — Sevens can keep moving so fast that they never fully process what they\'ve left behind.'
+  },
+  8: {
+    name: 'The Challenger', tagline: 'Powerful · Decisive · Willful',
+    desc: 'Eights lead with force and rarely soften the impact. Confrontation doesn\'t unsettle them — they trust direct conflict more than diplomacy. Beneath the armor is someone who cares fiercely, protects intensely, and is terrified of being betrayed. Vulnerability is the thing they guard most carefully, which is exactly what makes it so powerful when an Eight finally lets someone in.'
+  },
+  9: {
+    name: 'The Peacemaker', tagline: 'Receptive · Reassuring · Agreeable',
+    desc: 'Nines have an unusual gift for seeing every side of a situation and a genuine desire for harmony. They absorb the world\'s conflicts like a buffer, often at the expense of their own voice and momentum. Their patience and steadiness make them beloved — and their greatest challenge is recognizing that their own presence, opinions, and desires matter as much as anyone else\'s.'
+  }
+};
+
+/* ─── RANDOMIZED QUIZ QUESTIONS ─────────────────────────────────────────── */
+
 const QUIZZES = [
-  { id: 'A', type: 4, name: 'The Individualist', tagline: 'Sensitive · Introspective · Expressive',
-    desc: 'You feel things with uncommon depth and search for meaning in almost everything. Identity and authenticity matter to you enormously — you would rather be misunderstood than false. You carry both a rich inner life and a persistent sense that something essential is missing, which drives your creativity and your longing.',
-    statements: ['I am sensitive.','I strive to have a unique style.','I look for meaning in just about everything.','I am often misunderstood.','I am highly creative.','Being authentic is important even if it means I\'m not popular.','I tend to feel jealous of others, even though I can\'t explain why.','I am comfortable with dark and intense emotions.','I can be pretty sentimental and long for the past.','I value self-awareness, following my heart, and staying true to who I am.']
+  {
+    id: 'A', type: 1,
+    variants: [
+      ['I hold myself to a high standard.', 'I notice mistakes that others tend to overlook.', 'I believe most things have a right way and a wrong way.', 'I find it difficult to relax when there\'s still work to be done.', 'I\'m more principled than most people I know.', 'Getting things right matters more to me than getting things done quickly.', 'I often feel responsible for fixing what\'s broken around me.', 'I can be hard on myself when I fall short of my own expectations.', 'People come to me when they need someone with good judgment.', 'I value truth, fairness, and living in accordance with my values.'],
+      ['I have a strong sense of what\'s right and wrong.', 'I\'m the first to spot errors in a plan or a document.', 'I get frustrated when people don\'t follow through properly.', 'Relaxing feels self-indulgent when there\'s still something left to fix.', 'I\'d rather do something correctly than do it fast.', 'I have a quiet inner critic that rarely goes silent.', 'I feel a sense of responsibility to model good behavior.', 'It bothers me when rules are applied unevenly.', 'I tend to see the gap between what is and what should be.', 'I value integrity, improvement, and doing things the right way.'],
+      ['I set high expectations for myself, sometimes too high.', 'I\'m good at identifying what\'s out of place or needs correcting.', 'I believe most decisions have a clearly better option if you think it through.', 'My mind keeps running even when I should be resting.', 'I take quality seriously in everything I do.', 'I\'m sometimes called critical, even when I\'m just being honest.', 'I feel a pull to correct things that are wrong, even when it\'s not my job.', 'I\'m more disciplined than most people I spend time with.', 'When I commit to something, I hold myself accountable.', 'I value order, honesty, and doing what\'s right even when it\'s inconvenient.']
+    ]
   },
-  { id: 'B', type: 7, name: 'The Enthusiast', tagline: 'Spontaneous · Versatile · Acquisitive',
-    desc: 'You move toward the world with energy and appetite. New experiences pull at you constantly and you resist being pinned down — by boredom, by commitment, or by pain. You reframe difficulty with remarkable speed and keep your options deliberately open, which makes you endlessly generative and occasionally difficult to hold.',
-    statements: ['When I have an idea, I just go for it.','I love thinking about my next adventure.','I\'m good at finding the silver lining in most situations.','My independence is very important to me.','New experiences make me come alive.','I can be pretty spontaneous and fun-loving.','I am most likely to keep my options open.','I loathe being bored.','I value pleasure, variety, and my freedom.','I am highly resilient and can bounce back from upsetting setbacks.']
+  {
+    id: 'B', type: 2,
+    variants: [
+      ['I\'m good at sensing what people need before they ask.', 'Relationships are at the center of my life.', 'Being needed by others gives me a sense of purpose.', 'I tend to prioritize other people\'s feelings over my own.', 'I give more than I receive in most relationships.', 'I find it hard to say no when someone I care about needs help.', 'People come to me when they\'re struggling because I listen well.', 'I sometimes use warmth or flattery to stay connected to people.', 'Feeling unappreciated hurts more than I usually admit.', 'I value closeness, emotional connection, and being genuinely useful to others.'],
+      ['I pay close attention to the emotional climate in a room.', 'My most meaningful moments involve helping someone through something hard.', 'I feel most like myself when someone truly needs me.', 'Other people\'s needs tend to take precedence over mine.', 'I rarely ask for help, even when I need it.', 'I work hard to maintain warmth and closeness in my relationships.', 'I sometimes wonder if people would still value me if I stopped giving so much.', 'I\'ve bent the truth a little to keep someone feeling good.', 'Recognition for my effort matters more than I like to show.', 'I value love, connection, and being a constant source of support.'],
+      ['I notice quickly when someone is off or struggling.', 'I\'m drawn toward people who need support.', 'I feel most fulfilled when I\'ve genuinely helped someone.', 'I can neglect my own needs while focusing on others.', 'I\'m more comfortable giving than receiving care.', 'I adjust my energy to match what people around me need.', 'I can feel resentful when my efforts go unacknowledged.', 'I sometimes do things for others expecting, at least partly, something in return.', 'It matters to me that people feel cared for by me.', 'I value generosity, warmth, and the feeling of being truly needed.']
+    ]
   },
-  { id: 'C', type: 1, name: 'The Reformer', tagline: 'Principled · Purposeful · Self-Controlled',
-    desc: 'You hold yourself — and often the world around you — to a high standard. You notice errors that others walk past, believe there is usually a right way to do things, and feel a quiet frustration when things fall short. Integrity drives you. So does a private inner critic that rarely goes quiet.',
-    statements: ['I can be pretty hard on myself.','Several people in my life come to me for advice.','I\'m excellent at finding mistakes — typos, things out of place, and so on.','It\'s difficult for me to relax when I know there is so much to get done.','I find myself feeling frustrated and irritated when things are not done correctly.','I believe that there is a right way to do everything.','I\'m great at finding what needs to be fixed or corrected.','I am independent and can get things done on my own rather than depending on others.','I\'m a self-disciplined person.','I value truth, justice, and living by my values.']
+  {
+    id: 'C', type: 3,
+    variants: [
+      ['I know how to present myself well in any situation.', 'Success and accomplishment are deeply important to me.', 'I set goals and I follow through on them.', 'What other people think of me genuinely matters.', 'I have a competitive streak — I like to win.', 'I\'m good at reading what a room or audience wants.', 'I\'d rather get it done well enough than stall trying to make it perfect.', 'Encouragement from people I respect gives me energy.', 'I\'m known for being effective and getting things done.', 'I value achievement, admiration, and helping others reach their potential.'],
+      ['I adapt quickly to what a situation calls for.', 'I\'m motivated by results and external recognition.', 'I\'m skilled at keeping projects moving forward.', 'I care how I come across to people who matter to me.', 'I measure myself partly by what I\'ve achieved.', 'I work hard at building a reputation I\'m proud of.', 'I prefer to stay focused on a goal rather than overthink the process.', 'Peer validation and positive feedback genuinely motivate me.', 'I\'ve worked hard to be seen as capable and impressive.', 'I value ambition, efficiency, and earning the respect of others.'],
+      ['I\'m good at motivating myself and other people toward a goal.', 'I\'m aware of the image I project and I tend to manage it carefully.', 'I put real effort into being effective at what I do.', 'Recognition for my work is something I actively seek.', 'Falling behind or underperforming is something I find genuinely uncomfortable.', 'I can lose track of who I actually am when I\'m focused on performing well.', 'I tend to equate my value with my output.', 'I know how to network and build the right kinds of relationships.', 'I encourage and push the people around me to do their best.', 'I value being seen as successful, capable, and worth admiring.']
+    ]
   },
-  { id: 'D', type: 8, name: 'The Challenger', tagline: 'Powerful · Decisive · Willful',
-    desc: 'You lead with force and rarely back down. Confrontation does not unsettle you the way it does others — in fact, you trust it more than pleasantries. Beneath the tough exterior sits a person who cares fiercely about those they love and who takes the protection of others seriously. Vulnerability is the thing you guard most carefully.',
-    statements: ['I am known for my strength.','I have a tough exterior, but most people don\'t realize I am quite soft on the inside.','I want the outside world to understand that I am a force to be reckoned with.','Confrontation does not bother me.','I feel as though I can\'t let my guard down.','People have sometimes referred to me as being "too much" or coming on too strongly.','I often feel as though I need to protect myself, my loved ones, and those less fortunate.','I feel an overwhelming responsibility to always be a pillar of strength.','When I\'m stressed, I tend to overanalyze to regain some form of control.','I value strength, leadership, and candor.']
+  {
+    id: 'D', type: 4,
+    variants: [
+      ['I experience emotions more intensely than most people.', 'I look for meaning and depth in everything, not just surface things.', 'Having a distinct identity and personal style matters a great deal to me.', 'I often feel like I don\'t quite belong, even with people I love.', 'I connect more easily with melancholy and complexity than with lightness.', 'Being misunderstood is a recurring experience for me.', 'I sometimes envy people who seem to have something I\'m missing.', 'Authenticity matters more to me than being liked.', 'I tend to romanticize the past and feel nostalgia intensely.', 'I value self-expression, authenticity, and living close to what\'s true.'],
+      ['My inner life is rich and complex — sometimes overwhelmingly so.', 'Ordinary experiences often feel insufficient; I\'m drawn to what\'s deeper.', 'I put real thought into how I express myself.', 'I sometimes feel fundamentally different from the people around me.', 'I\'m more comfortable with difficult emotions than most people are.', 'I\'ve been told I\'m too intense or too sensitive.', 'I sometimes want what others have, even when I can\'t explain why.', 'I\'d rather be real and unpopular than popular and false.', 'I can dwell in sadness longer than is probably useful.', 'I value depth, beauty, and a life that feels genuinely my own.'],
+      ['I feel things deeply and find shallow conversations draining.', 'I\'m always searching for what something really means.', 'I have a strong aesthetic sensibility and a distinctive personal style.', 'A persistent sense that something is missing follows me through life.', 'I\'m at home in emotional complexity — it\'s where I feel most alive.', 'I can feel profoundly alone even when surrounded by people.', 'I compare myself to others more than I\'d like.', 'I care more about being genuine than about fitting in.', 'I carry a sentimental attachment to the past.', 'I value beauty, emotional truth, and living as fully myself as possible.']
+    ]
   },
-  { id: 'E', type: 3, name: 'The Achiever', tagline: 'Adaptable · Excelling · Driven',
-    desc: 'You know how to read a room and shape yourself to win it. Success matters to you — not just as an outcome but as proof of your worth. You set goals, pursue them with focus, and genuinely want to help others reach their potential too. The harder question, one you may circle back to privately, is who you are when no one is watching.',
-    statements: ['Having success is very important to me.','Other people\'s opinions matter to me.','I work hard at trying to earn the respect and admiration of others.','It doesn\'t have to be perfect; it just needs to get done.','I like to set goals for myself.','Encouragement and affirmations from my peers feel meaningful.','I know how to work a room.','I have a very competitive spirit; I like to win.','I enjoy encouraging others and helping them live up to their potential.','I value reaching my goals, achieving something, and being admired.']
+  {
+    id: 'E', type: 5,
+    variants: [
+      ['I prefer to understand something fully before I act on it.', 'I need significant amounts of time alone to feel like myself.', 'Knowledge and competence feel like my most important resources.', 'Social interaction drains me more than most people seem to notice.', 'I\'m more comfortable with ideas than with emotions.', 'I guard my privacy and my inner life carefully.', 'I\'ve been told I seem distant or hard to read.', 'I tend to detach and observe rather than participate directly.', 'I prefer to be self-sufficient rather than depend on others.', 'I value intelligence, solitude, and the freedom to pursue my own thinking.'],
+      ['I research and analyze before I make any significant move.', 'I recharge through solitude, not through people.', 'I feel most secure when I have enough knowledge and space.', 'People can misread my reserve as arrogance or coldness.', 'Emotional conversations tend to exhaust or confuse me.', 'I share my inner world with very few people.', 'I tend to minimize my needs so I don\'t have to depend on anyone.', 'I watch and analyze situations before engaging.', 'I like to develop expertise in things I care about.', 'I value autonomy, insight, and having time to think without interruption.'],
+      ['I think before I act — sometimes to a fault.', 'I need more alone time than most people I know.', 'Having specialized knowledge makes me feel secure.', 'Crowds and high-demand social situations take a real toll on me.', 'I prefer depth to breadth in conversation and in relationships.', 'People close to me sometimes feel kept at arm\'s length.', 'I can come across as superior, though that\'s rarely my intention.', 'I observe the world carefully from a slight remove.', 'I like having systems and frameworks for understanding things.', 'I value privacy, precision, and the freedom to live in my head.']
+    ]
   },
-  { id: 'F', type: 5, name: 'The Investigator', tagline: 'Perceptive · Innovative · Secretive',
-    desc: 'You live in the mind. Knowledge is your primary resource, and solitude is how you replenish. You observe more than you disclose, and you prefer to fully understand something before acting on it. Social energy costs you in a way others don\'t always see. What looks like aloofness is often just conservation.',
-    statements: ['I think that knowledge is everything.','I want to connect with others but I simultaneously fear the energy it requires.','I need a lot of alone time to recharge, think, and learn.','I\'m more comfortable having an intellectual conversation than an emotional one.','I need to fully understand something before I can act on it.','I can be a pretty private person.','My deep well of knowledge has sometimes come across as arrogant or condescending.','Being self-reliant is very important to me.','I enjoy learning and pursuing my interests.','I value innovation, privacy, and intelligence.']
+  {
+    id: 'F', type: 6,
+    variants: [
+      ['I\'m deeply loyal to the people and commitments I care about.', 'I spend a fair amount of time thinking about what could go wrong.', 'I take my responsibilities seriously, sometimes too seriously.', 'Trust is hard-won with me — it takes time.', 'I need to feel supported before I can fully commit to something.', 'I work hard to prepare for scenarios others don\'t think about.', 'I sometimes second-guess myself even after I\'ve made a decision.', 'I feel a tension between authority and the urge to push against it.', 'I\'m dedicated and hardworking when I believe in what I\'m doing.', 'I value loyalty, security, and being part of a trusted group.'],
+      ['Once I commit to someone, I stay committed.', 'My mind tends to run through worst-case scenarios.', 'I feel most comfortable when I know what to expect.', 'I\'m suspicious of people until they\'ve earned my trust.', 'I feel anxious when I lack support or clear guidance.', 'I\'m often the person who asks "but what if this goes wrong?"', 'I can be indecisive because I\'m still assessing the risks.', 'I have a complicated relationship with rules — I follow them and resent them.', 'I show up reliably and follow through when it counts.', 'I value reliability, belonging, and knowing that people have my back.'],
+      ['My loyalty is one of my defining qualities.', 'I tend to anticipate problems before they arrive.', 'I need a baseline level of certainty before I can relax.', 'I have a finely tuned radar for people whose motives seem off.', 'I find it hard to act before I\'ve thought through the implications.', 'I feel uneasy when authority figures seem untrustworthy.', 'I replay my decisions wondering if I made the right call.', 'I work well inside structures I trust, and resist ones I don\'t.', 'I\'m one of the most dependable people in my circle.', 'I value trust, preparation, and the safety of being truly known.']
+    ]
   },
-  { id: 'G', type: 9, name: 'The Peacemaker', tagline: 'Receptive · Reassuring · Agreeable',
-    desc: 'You have an unusual capacity to see all sides of a situation and a genuine desire for everyone around you to be okay. Conflict feels like a threat to something essential, so you tend to let things go rather than press. You are patient, inclusive, and often the steadying presence in a room — but your own wants can quietly recede.',
-    statements: ['I prefer to let things go rather than have a confrontation.','I am a great listener.','I strive to live in a peaceful and calm environment.','I enjoy being creative.','I am accepting and inclusive.','I wish I had more ambition.','I am an optimist.','I typically see the good in people.','I can usually see all sides of a situation.','I value serenity, optimism, and maintaining inner peace.']
+  {
+    id: 'G', type: 7,
+    variants: [
+      ['I move toward new ideas and experiences instinctively.', 'I get restless when life feels too routine or predictable.', 'I\'m good at finding the upside in a difficult situation.', 'Keeping my options open is important to me.', 'I generate more ideas than I can ever act on.', 'I live at a fairly high energy level — slower days feel like a loss.', 'I\'m adaptable and find most setbacks easier to recover from than others do.', 'Committing to one path can feel like giving up everything else.', 'I approach most challenges with genuine optimism.', 'I value freedom, variety, and the feeling that anything is still possible.'],
+      ['I jump at new opportunities before I\'ve finished the last one.', 'Boredom is one of the things I\'m most allergic to.', 'I can reframe almost any situation to find something positive in it.', 'I like to preserve my freedom to change direction.', 'My mind moves fast and I like it that way.', 'I love planning adventures and experiences as much as having them.', 'I bounce back quickly when things don\'t go the way I hoped.', 'Long-term commitment can feel like a wall closing in.', 'I tend to lead with enthusiasm even when the situation calls for caution.', 'I value spontaneity, fun, and a life that doesn\'t run out of possibilities.'],
+      ['I\'m energized by novelty and variety.', 'Staying in one place — mentally or physically — is hard for me.', 'I tend to recast problems as opportunities almost reflexively.', 'Having multiple doors open at once feels safe and right to me.', 'I\'m a naturally upbeat person, even when things are objectively hard.', 'I plan future experiences the way some people plan finances.', 'I recover from disappointment faster than most.', 'The idea of being stuck in one thing for a long time makes me uncomfortable.', 'I\'d rather take a swing and miss than play it safe and wonder.', 'I value optimism, adventure, and the open road of possibility.']
+    ]
   },
-  { id: 'H', type: 6, name: 'The Loyalist', tagline: 'Committed · Security-Oriented · Engaging',
-    desc: 'Loyalty is your bedrock. You take responsibility seriously, think carefully before acting, and don\'t give your trust quickly — but when you do, it tends to hold. Uncertainty and potential threats occupy your mind in ways that can be exhausting. You have a sharp sense of what could go wrong, which makes you both a reliable planner and a habitual worrier.',
-    statements: ['I am very loyal to my family and friends.','I can be suspicious of people\'s motives.','I take my responsibilities seriously.','I am dedicated and hardworking.','The future worries me and I can\'t stop obsessing over it.','It\'s vital that I feel supported.','It\'s difficult for me to spring into action before assessing all the possibilities.','It takes me a fair amount of time to trust people.','I often have daydreams or actual plans to rebel against social norms, rules, and authority figures.','I value loyalty, being supportive, and being collaborative.']
+  {
+    id: 'H', type: 8,
+    variants: [
+      ['I don\'t back down easily when I believe I\'m right.', 'I have a strong presence that people tend to notice.', 'Confrontation doesn\'t intimidate me the way it seems to intimidate others.', 'I feel a need to stay in control of my environment and my life.', 'I protect the people who matter to me, sometimes aggressively.', 'I\'ve been told I come on too strong or take up too much space.', 'Showing vulnerability doesn\'t come naturally to me.', 'I would rather act and be wrong than hesitate and lose the moment.', 'I feel a responsibility to stand up for people who can\'t stand up for themselves.', 'I value strength, directness, and the ability to lead.'],
+      ['I know my own strength and I\'m not afraid to use it.', 'I prefer directness — I don\'t have patience for people who dance around things.', 'I can hold my ground in almost any conflict.', 'Weakness — especially in myself — is something I find hard to tolerate.', 'I take care of the people in my corner, and I expect the same.', 'I\'ve been called intense, domineering, or too much to handle.', 'I rarely let people see past my hard exterior.', 'I trust my gut and move on it quickly.', 'I believe that power, used well, protects people.', 'I value boldness, candor, and being someone people can count on when it matters.'],
+      ['I lead with confidence and expect people to keep up.', 'I say what I mean and I mean what I say.', 'I rarely feel threatened by someone pushing back at me.', 'I need to be in charge of my own direction — being controlled is something I won\'t tolerate.', 'I feel protective of people who are being taken advantage of.', 'I\'ve intimidated people without meaning to.', 'I keep my softer side hidden from almost everyone.', 'When a decision needs to be made, I make it.', 'I believe the world respects strength more than it admits.', 'I value power, protection, and the respect that comes from being formidable.']
+    ]
   },
-  { id: 'I', type: 2, name: 'The Helper', tagline: 'Generous · Demonstrative · People-Pleasing',
-    desc: 'You attune to what people need and move to meet it — sometimes before they\'ve even named it themselves. Relationships are where you live. Being needed makes you feel valuable and loved, which means your generosity is real but not entirely selfless. Learning to receive, and to name your own needs, tends to be the deeper work.',
-    statements: ['Being needed makes me feel proud and valuable.','Relationships are the most important thing in my life.','I am excellent at understanding what people need.','In most relationships, I give more than I take.','I tend to focus on other people\'s emotions.','I tend to neglect my own needs.','People usually come to me when they\'re hurting because I\'m a good friend.','It\'s important for me to feel needed.','I have used flattery in the past to get people to like me.','I value emotional closeness and human connection above all else.']
+  {
+    id: 'I', type: 9,
+    variants: [
+      ['I tend to avoid conflict, even when I have something at stake.', 'People often describe me as calm or easy to be around.', 'I can usually see merit in all sides of a disagreement.', 'My own desires can get lost when I\'m trying to keep the peace.', 'I\'m a genuinely good listener and people seem to feel that.', 'I sometimes agree with things I don\'t actually believe to keep things smooth.', 'I can be slow to act because it\'s hard to know what I really want.', 'I\'m optimistic about people and tend to give them the benefit of the doubt.', 'I sometimes wonder whether I\'m too passive in my own life.', 'I value harmony, acceptance, and the kind of peace that comes from within.'],
+      ['I make myself small rather than let a conflict escalate.', 'I have a steady, reassuring quality that others seem to lean on.', 'I genuinely try to understand perspectives that conflict with my own.', 'I\'ve sacrificed what I wanted to make sure everyone else was okay.', 'People trust me with things because I don\'t react dramatically.', 'I smooth things over more than I should — sometimes to my own detriment.', 'Figuring out what I actually want takes more effort than it should.', 'I assume the best about people until I have a real reason not to.', 'I wish I were better at advocating for myself.', 'I value stillness, inclusivity, and a life without unnecessary friction.'],
+      ['I\'d rather absorb a slight than confront the person who caused it.', 'I create a calm and steady atmosphere wherever I go.', 'I see multiple valid perspectives in most disputes.', 'My needs can become invisible, even to me.', 'I listen in a way that makes people feel genuinely heard.', 'I tend to go along with things to avoid making waves.', 'I sometimes feel like I\'m living slightly on the edge of my own life.', 'I look for the good in people and usually find it.', 'I struggle to assert myself in ways that feel comfortable.', 'I value peace, acceptance, and the beauty of a life without drama.']
+    ]
   }
 ];
 
-const SCORE_MAP = [2, 1, 0];
+/* ─── TIEBREAKER SCENARIOS ───────────────────────────────────────────────── */
+
+const TIEBREAKERS = {};
+const TB_ORDER = {};
+
+function addTB(a, b, scenarios) {
+  const key = [a, b].sort((x, y) => x - y).join('-');
+  TIEBREAKERS[key] = scenarios;
+}
+
+function getTBScenarios(key) {
+  const scenarios = TIEBREAKERS[key];
+  if (!scenarios) return [];
+  if (!TB_ORDER[key]) {
+    TB_ORDER[key] = scenarios.map(() => Math.random() < 0.5);
+  }
+  return scenarios.map((sc, i) => ({
+    text: sc.text,
+    opts: TB_ORDER[key][i] ? [sc.opts[1], sc.opts[0]] : [sc.opts[0], sc.opts[1]]
+  }));
+}
+
+addTB(1, 2, [
+  {
+    text: 'A close friend asks you to help them move on a day you\'d planned as personal time. You help, but afterward you feel:',
+    opts: [
+      { type: 1, text: 'Quietly resentful — not at them, but at yourself for not finishing what you had planned.' },
+      { type: 2, text: 'Warm and glad you showed up, though you notice you never told them what you gave up.' }
+    ]
+  },
+  {
+    text: 'You\'re at a dinner and someone is telling a story you know is slightly wrong. You:',
+    opts: [
+      { type: 1, text: 'Feel compelled to correct it. You can\'t leave the record the way it is.' },
+      { type: 2, text: 'Let it go — keeping the mood warm matters more than the small inaccuracy.' }
+    ]
+  },
+  {
+    text: 'A coworker you\'ve helped repeatedly doesn\'t acknowledge it in a team meeting. You feel:',
+    opts: [
+      { type: 1, text: 'Mildly irritated that credit wasn\'t given where it was due.' },
+      { type: 2, text: 'Quietly hurt — being seen and appreciated by them genuinely mattered to you.' }
+    ]
+  }
+]);
+
+addTB(1, 3, [
+  {
+    text: 'You deliver a project that meets the deadline but isn\'t quite up to your standard. You feel:',
+    opts: [
+      { type: 1, text: 'Nagged. You know exactly where it fell short and it sits with you.' },
+      { type: 3, text: 'Fine. It crossed the finish line and got the result. You move on.' }
+    ]
+  },
+  {
+    text: 'Someone compliments your work publicly. Your first instinct is:',
+    opts: [
+      { type: 1, text: 'Mild discomfort — you think about the parts they couldn\'t see that still weren\'t right.' },
+      { type: 3, text: 'Genuine pleasure. Being seen as effective and capable is part of what you\'re working toward.' }
+    ]
+  },
+  {
+    text: 'A week after finishing a project that got praised, you still think about:',
+    opts: [
+      { type: 1, text: 'The section that wasn\'t quite right. It bothers you more than the praise helped.' },
+      { type: 3, text: 'Who noticed it and what it might open up for you next.' }
+    ]
+  }
+]);
+
+addTB(1, 4, [
+  {
+    text: 'You\'re cooking dinner and drop the entire pot of pasta on the floor. You:',
+    opts: [
+      { type: 1, text: 'Feel a flash of sharp frustration, clean it up efficiently, and start again — annoyed at the waste of time.' },
+      { type: 4, text: 'Feel the loss of the moment — all that effort — and need a minute before you can reset and begin again.' }
+    ]
+  },
+  {
+    text: 'A coworker presents work in a meeting that contains a real error. You:',
+    opts: [
+      { type: 1, text: 'Speak up and correct it, even though it\'s uncomfortable and makes you look like the difficult one.' },
+      { type: 4, text: 'Stay quiet — you don\'t want to reduce the moment to a procedural issue when they were clearly proud of it.' }
+    ]
+  },
+  {
+    text: 'You look at a photo from five years ago. What you mostly feel is:',
+    opts: [
+      { type: 1, text: 'Critical — you remember what you should have done differently around that time.' },
+      { type: 4, text: 'Wistful — there\'s a beauty and ache to it, and you sit with it for a while.' }
+    ]
+  }
+]);
+
+addTB(1, 5, [
+  {
+    text: 'When something is done poorly in your presence, you:',
+    opts: [
+      { type: 1, text: 'Feel a pull to correct it. A thing done wrong is a thing that needs fixing.' },
+      { type: 5, text: 'Note it internally — it\'s more of an observation than an itch. You file it and move on.' }
+    ]
+  },
+  {
+    text: 'A new colleague keeps doing something inefficiently. You\'ve mentioned it once. They haven\'t changed. You:',
+    opts: [
+      { type: 1, text: 'Bring it up again. The right way to do it matters enough to risk the awkwardness.' },
+      { type: 5, text: 'Let it go. You\'ve noted it, it\'s their call, and pressing further isn\'t worth the energy.' }
+    ]
+  },
+  {
+    text: 'When you make a mistake, what bothers you more?',
+    opts: [
+      { type: 1, text: 'That I acted without thinking it through and fell below the standard I hold myself to.' },
+      { type: 5, text: 'That I acted without enough information and made an error I could have avoided.' }
+    ]
+  }
+]);
+
+addTB(1, 6, [
+  {
+    text: 'You\'re asked to follow a new workplace policy you think is misguided. You:',
+    opts: [
+      { type: 1, text: 'Follow it, but feel internally at odds. You\'re working through whether it\'s actually right.' },
+      { type: 6, text: 'Follow it — the structure it provides feels safer than going your own way.' }
+    ]
+  },
+  {
+    text: 'A team you\'re part of makes a decision you disagree with. You:',
+    opts: [
+      { type: 1, text: 'Say so clearly. The right course of action is worth the discomfort of pushing back.' },
+      { type: 6, text: 'Raise your concern, then defer — you\'d rather flag it and stay aligned than go rogue.' }
+    ]
+  },
+  {
+    text: 'You take on extra work nobody asked you to do. Honestly, it\'s because:',
+    opts: [
+      { type: 1, text: 'It needed to be done and the right way to handle it was to do it properly.' },
+      { type: 6, text: 'Being dependable and prepared is what keeps you trusted and safe in the group.' }
+    ]
+  }
+]);
+
+addTB(1, 7, [
+  {
+    text: 'A project you\'re leading went well, but there was a cleaner approach you could have taken. A week later you:',
+    opts: [
+      { type: 1, text: 'Still think about the gap. You\'ll do it better next time and you\'ve already filed the lesson.' },
+      { type: 7, text: 'Have moved on. It worked, you learned something, and there\'s a new thing in front of you.' }
+    ]
+  },
+  {
+    text: 'It\'s Sunday evening. The week ahead is fully booked. You feel:',
+    opts: [
+      { type: 1, text: 'Ready. A full schedule means things are moving and you know what\'s expected.' },
+      { type: 7, text: 'Slightly constrained — you\'re already thinking about where the breathing room might be.' }
+    ]
+  },
+  {
+    text: 'You have an open afternoon with nothing scheduled. By the end of it you feel most satisfied if you:',
+    opts: [
+      { type: 1, text: 'Used it well — cleared something, improved something, didn\'t waste it.' },
+      { type: 7, text: 'Followed your energy somewhere interesting, even if nothing got done.' }
+    ]
+  }
+]);
+
+addTB(1, 8, [
+  {
+    text: 'When something is wrong and needs to be called out, your instinct is:',
+    opts: [
+      { type: 1, text: 'To address it clearly and correctly — but within a structure, so it can actually be fixed.' },
+      { type: 8, text: 'To confront it directly, immediately, without much patience for process.' }
+    ]
+  },
+  {
+    text: 'Someone publicly disputes a decision you made in front of your team. You:',
+    opts: [
+      { type: 1, text: 'Hear them out carefully. If they have a point, you want to know — even if it\'s uncomfortable.' },
+      { type: 8, text: 'Push back on the spot. You\'re not going to be undermined in front of the group.' }
+    ]
+  },
+  {
+    text: 'You\'re managing someone who keeps cutting corners. You:',
+    opts: [
+      { type: 1, text: 'Address it directly and lay out exactly what the standard is and why it matters.' },
+      { type: 8, text: 'Make it very clear, once, that it stops now. You don\'t repeat yourself.' }
+    ]
+  }
+]);
+
+addTB(1, 9, [
+  {
+    text: 'A family dinner is heading toward a real argument about something that actually matters. You:',
+    opts: [
+      { type: 1, text: 'Engage. The discomfort of the conflict is worth it if it resolves the actual issue.' },
+      { type: 9, text: 'Try to redirect. You\'d rather find the path back to calm than let it escalate.' }
+    ]
+  },
+  {
+    text: 'You notice a recurring problem at work that nobody else seems to care about. You:',
+    opts: [
+      { type: 1, text: 'Raise it. If something is wrong and fixable, you feel responsible for saying so.' },
+      { type: 9, text: 'Mention it once, then let it rest. You don\'t want to become the person who won\'t drop it.' }
+    ]
+  },
+  {
+    text: 'After a long week, the inner voice you hear most is:',
+    opts: [
+      { type: 1, text: 'You should have handled that one thing differently. It wasn\'t quite right.' },
+      { type: 9, text: 'Just rest. Nothing is on fire. Let yourself breathe.' }
+    ]
+  }
+]);
+
+addTB(2, 3, [
+  {
+    text: 'You organized a gathering that went beautifully. Afterward, what stays with you longest is:',
+    opts: [
+      { type: 2, text: 'A specific moment when someone looked genuinely cared for and at ease.' },
+      { type: 3, text: 'The feedback — who noticed, who said something, how it landed.' }
+    ]
+  },
+  {
+    text: 'When you\'re not the center of attention, you feel:',
+    opts: [
+      { type: 2, text: 'A little invisible — like I\'m only fully real when someone needs me.' },
+      { type: 3, text: 'Mildly impatient — I know I could be contributing more if I had the floor.' }
+    ]
+  },
+  {
+    text: 'A friend thanks you genuinely for your support over the past month. You feel most:',
+    opts: [
+      { type: 2, text: 'Moved. Being needed and appreciated by someone you love is deeply satisfying.' },
+      { type: 3, text: 'Pleased — and quietly aware that you showed up well and it reflects on you.' }
+    ]
+  }
+]);
+
+addTB(2, 4, [
+  {
+    text: 'A close friend cancels plans for the third time in a row. You:',
+    opts: [
+      { type: 2, text: 'Check in on them — something must be going on and you want to make sure they\'re okay.' },
+      { type: 4, text: 'Feel it as a slow ache. You start to wonder what it means about where you stand.' }
+    ]
+  },
+  {
+    text: 'After a hard conversation with someone you love, you spend the next hour:',
+    opts: [
+      { type: 2, text: 'Thinking about how they\'re doing with it and whether you said what they needed to hear.' },
+      { type: 4, text: 'Sitting with your own feelings about it — processing what it meant and what it stirred up.' }
+    ]
+  },
+  {
+    text: 'What do you want people to feel when they\'re around you?',
+    opts: [
+      { type: 2, text: 'Cared for and supported. I want them to feel like I\'m genuinely there for them.' },
+      { type: 4, text: 'Understood and met as a full person. I want real recognition of who I actually am.' }
+    ]
+  }
+]);
+
+addTB(2, 6, [
+  {
+    text: 'Someone in your circle is going through something hard but hasn\'t asked for help. You:',
+    opts: [
+      { type: 2, text: 'Reach out anyway. You can feel something is off and waiting for them to ask feels wrong.' },
+      { type: 6, text: 'Check in carefully — you want to be there, but you\'re also aware of not overstepping.' }
+    ]
+  },
+  {
+    text: 'A friend is venting about a recurring problem they keep making worse. You:',
+    opts: [
+      { type: 2, text: 'Listen and offer what they need emotionally. You\'re not here to fix them — you\'re here to support them.' },
+      { type: 6, text: 'Listen, then gently point out the pattern. Loyalty means being honest, not just agreeable.' }
+    ]
+  },
+  {
+    text: 'You stay late to help a colleague finish something. Honestly, it\'s mostly because:',
+    opts: [
+      { type: 2, text: 'They needed help and it feels good to be the person they could count on.' },
+      { type: 6, text: 'They\'re part of your team and you don\'t leave people stranded — that\'s just who you are.' }
+    ]
+  }
+]);
+
+addTB(2, 7, [
+  {
+    text: 'A friend needs a favor on a day you had something fun planned for yourself. You:',
+    opts: [
+      { type: 2, text: 'Help them. Showing up for people matters more than the thing you were going to do.' },
+      { type: 7, text: 'Try to do both, or find a way to reschedule — you don\'t love giving up your plans.' }
+    ]
+  },
+  {
+    text: 'At a dinner party, you find yourself gravitating toward:',
+    opts: [
+      { type: 2, text: 'The person who seems a little left out. You want to make sure they feel included.' },
+      { type: 7, text: 'The most interesting table. You want to be in the conversation that\'s actually alive.' }
+    ]
+  },
+  {
+    text: 'You\'re happiest when:',
+    opts: [
+      { type: 2, text: 'Someone I love is doing well and I played some part in that.' },
+      { type: 7, text: 'I\'m in the middle of something exciting and the next thing is already on the horizon.' }
+    ]
+  }
+]);
+
+addTB(2, 8, [
+  {
+    text: 'Someone in your circle is being treated unfairly by someone with more power. You:',
+    opts: [
+      { type: 2, text: 'Go to them first — I want to make sure they feel supported and not alone in it.' },
+      { type: 8, text: 'Go to the person responsible. That behavior doesn\'t get to stand.' }
+    ]
+  },
+  {
+    text: 'A close relationship has grown distant over the past few months. You:',
+    opts: [
+      { type: 2, text: 'Reach toward it — do more, check in more, try to warm it back up.' },
+      { type: 8, text: 'Name it directly. You\'d rather have an honest conversation than let it quietly fade.' }
+    ]
+  },
+  {
+    text: 'When you care deeply about someone, it mostly shows as:',
+    opts: [
+      { type: 2, text: 'Attentiveness — I notice what they need and move toward it without being asked.' },
+      { type: 8, text: 'Protectiveness — I make it clear that I\'m in their corner and anyone who messes with them answers to me.' }
+    ]
+  }
+]);
+
+addTB(2, 9, [
+  {
+    text: 'A close relationship has felt slightly off for a few weeks and nothing was said. You:',
+    opts: [
+      { type: 2, text: 'Lean in — do something warm and deliberate to close the gap.' },
+      { type: 9, text: 'Give it space and hope it settles on its own without a confrontation.' }
+    ]
+  },
+  {
+    text: 'In a group where someone is clearly struggling, you:',
+    opts: [
+      { type: 2, text: 'Find a quiet moment to check in on them specifically.' },
+      { type: 9, text: 'Create a generally welcoming atmosphere so everyone, including them, feels comfortable.' }
+    ]
+  },
+  {
+    text: 'When a friendship cools without explanation, you mostly feel:',
+    opts: [
+      { type: 2, text: 'Anxious and a little hurt — you wonder what you did or what more you could have given.' },
+      { type: 9, text: 'Sad and passive — you don\'t push, you just wait and hope things find their way back.' }
+    ]
+  }
+]);
+
+addTB(3, 4, [
+  {
+    text: 'You\'re working on something creative. Halfway through, you realize the approach isn\'t landing. You:',
+    opts: [
+      { type: 3, text: 'Pivot to what will work. The goal is the outcome, not the original vision.' },
+      { type: 4, text: 'Sit with it. You\'d rather find a way to make the true version work than abandon it for something more palatable.' }
+    ]
+  },
+  {
+    text: 'You present work you\'re proud of and the response is lukewarm. You feel:',
+    opts: [
+      { type: 3, text: 'Deflated and motivated — you immediately start thinking about what would have landed better.' },
+      { type: 4, text: 'Misunderstood. You know what you made was real and it stings that it wasn\'t seen.' }
+    ]
+  },
+  {
+    text: 'In a professional setting, what\'s harder to hide?',
+    opts: [
+      { type: 3, text: 'My awareness of how I\'m being perceived and whether I\'m making the right impression.' },
+      { type: 4, text: 'My emotional state — when something affects me, it\'s hard to fully compartmentalize.' }
+    ]
+  }
+]);
+
+addTB(3, 5, [
+  {
+    text: 'You\'re invited to a networking event with people in your field. You:',
+    opts: [
+      { type: 3, text: 'Go. These connections matter and you know how to work a room.' },
+      { type: 5, text: 'Weigh it carefully. The energy it costs rarely matches what you get back.' }
+    ]
+  },
+  {
+    text: 'A colleague takes public credit for an idea you contributed. You:',
+    opts: [
+      { type: 3, text: 'Address it — credit and visibility matter and this is worth correcting.' },
+      { type: 5, text: 'Note it privately and adjust how much you share with them going forward.' }
+    ]
+  },
+  {
+    text: 'You have an open month with no deadlines. You spend it:',
+    opts: [
+      { type: 3, text: 'Building toward something. An open month is an opportunity, not a break.' },
+      { type: 5, text: 'Going deep on something I\'ve been meaning to properly understand.' }
+    ]
+  }
+]);
+
+addTB(3, 6, [
+  {
+    text: 'A project you championed is getting quiet pushback from people above you. You:',
+    opts: [
+      { type: 3, text: 'Recalibrate. Figure out what angle will get it across the line and work that angle.' },
+      { type: 6, text: 'Take it seriously. If people with more context are hesitant, you want to understand why.' }
+    ]
+  },
+  {
+    text: 'You\'re in a new role and the expectations aren\'t clearly defined. You feel:',
+    opts: [
+      { type: 3, text: 'Liberated — ambiguity gives you room to define what winning looks like.' },
+      { type: 6, text: 'Unsettled — you work best when you know what\'s expected and what success actually means.' }
+    ]
+  },
+  {
+    text: 'You\'re in a meeting and have a genuinely good idea. The room is moving fast. You:',
+    opts: [
+      { type: 3, text: 'Find the moment and take it. You\'re not going to let the idea die because the timing was imperfect.' },
+      { type: 6, text: 'Wait for the right opening — jumping in without reading the room feels risky.' }
+    ]
+  }
+]);
+
+addTB(3, 7, [
+  {
+    text: 'You have a rare open month with no deadlines. You spend it:',
+    opts: [
+      { type: 3, text: 'Building toward something. An open stretch is an opportunity, not a break.' },
+      { type: 7, text: 'Following your energy — new experiences, spontaneous plans, things you\'ve been meaning to try.' }
+    ]
+  },
+  {
+    text: 'What bores you faster?',
+    opts: [
+      { type: 3, text: 'Lack of progress. I need to feel like I\'m building toward something real.' },
+      { type: 7, text: 'Sameness. I can handle almost anything except doing the same thing twice.' }
+    ]
+  },
+  {
+    text: 'A project you finished six months ago — what do you think about most?',
+    opts: [
+      { type: 3, text: 'How it positioned you and what it led to next.' },
+      { type: 7, text: 'What you learned and how it opened up something new.' }
+    ]
+  }
+]);
+
+addTB(3, 8, [
+  {
+    text: 'You want a promotion. Your instinct is to:',
+    opts: [
+      { type: 3, text: 'Build the case carefully — perform at a level that makes the answer obvious.' },
+      { type: 8, text: 'Have the conversation directly. Ask for what you want and make clear you\'re serious.' }
+    ]
+  },
+  {
+    text: 'When conflict arises at work, you:',
+    opts: [
+      { type: 3, text: 'Try to manage it strategically — conflict is bad for the image and bad for goals.' },
+      { type: 8, text: 'Move toward it. You\'d rather have it out than let something fester.' }
+    ]
+  },
+  {
+    text: 'Someone tries to take credit for your work in a meeting. You:',
+    opts: [
+      { type: 3, text: 'Correct the record smoothly — you reclaim the credit without making a scene.' },
+      { type: 8, text: 'Call it out directly. You\'re not going to let that stand in front of everyone.' }
+    ]
+  }
+]);
+
+addTB(3, 9, [
+  {
+    text: 'You\'re in a meeting and have a strong opinion. The room is moving in a different direction. You:',
+    opts: [
+      { type: 3, text: 'Make your case. You\'re there to contribute and being visible matters.' },
+      { type: 9, text: 'Stay quiet unless directly asked. You\'d rather keep things moving than slow them down.' }
+    ]
+  },
+  {
+    text: 'An unproductive week goes by with no real output. You feel:',
+    opts: [
+      { type: 3, text: 'Anxious. Being unproductive makes you feel like you\'re falling behind.' },
+      { type: 9, text: 'Okay, mostly. Rest has its own value and it was probably needed.' }
+    ]
+  },
+  {
+    text: 'You\'re between projects with nothing urgent on your plate. After a few days you:',
+    opts: [
+      { type: 3, text: 'Start building something. The stillness starts to feel like wasted opportunity.' },
+      { type: 9, text: 'Settle into it. The breathing room is genuinely welcome.' }
+    ]
+  }
+]);
+
+addTB(4, 5, [
+  {
+    text: 'You receive difficult feedback on something personal you made. You spend the next hour:',
+    opts: [
+      { type: 4, text: 'Sitting with the feeling — what it stirred up, whether the criticism is true, what it means about you.' },
+      { type: 5, text: 'Analyzing the feedback — breaking it down, deciding what\'s valid, building a framework for what to do differently.' }
+    ]
+  },
+  {
+    text: 'A friend wants to talk through something emotional in depth. You:',
+    opts: [
+      { type: 4, text: 'Settle in. This is the kind of conversation that matters and you\'re genuinely present for it.' },
+      { type: 5, text: 'Engage, but you notice you\'re more comfortable helping them think through it than sitting in the feeling with them.' }
+    ]
+  },
+  {
+    text: 'When you need to process something hard, you reach for:',
+    opts: [
+      { type: 4, text: 'Expression — writing, making something, letting the feeling find a form.' },
+      { type: 5, text: 'Understanding — reading, researching, building a mental model of what happened.' }
+    ]
+  }
+]);
+
+addTB(4, 6, [
+  {
+    text: 'You\'re about to make a significant life decision. The night before, you:',
+    opts: [
+      { type: 4, text: 'Sit with whether this is actually true to who you are and the life you want to be living.' },
+      { type: 6, text: 'Run through the scenarios — what could go wrong, who you can call if it does.' }
+    ]
+  },
+  {
+    text: 'When you struggle, the first thing you reach for is:',
+    opts: [
+      { type: 4, text: 'Something creative — a way to give the feeling a form and make meaning from it.' },
+      { type: 6, text: 'Someone trusted — talking it through with a person who knows you and will be honest.' }
+    ]
+  },
+  {
+    text: 'A close friendship shifts without explanation. You feel:',
+    opts: [
+      { type: 4, text: 'A deep, searching sadness — you replay the relationship looking for what it means about you.' },
+      { type: 6, text: 'Anxious and alert — something changed and you want to understand what and whether it\'s fixable.' }
+    ]
+  }
+]);
+
+addTB(4, 7, [
+  {
+    text: 'You\'ve just ended something — a project, a relationship, a chapter. You spend the first week:',
+    opts: [
+      { type: 4, text: 'In it — grieving, processing, honoring the weight of what it was.' },
+      { type: 7, text: 'Looking forward — what\'s next, what you learned, what door is now open.' }
+    ]
+  },
+  {
+    text: 'You\'re having a hard emotional stretch. Your natural move is to:',
+    opts: [
+      { type: 4, text: 'Stay with it. The feeling has something to say and you want to hear it.' },
+      { type: 7, text: 'Get moving. A new plan, a new experience, something to shift the energy.' }
+    ]
+  },
+  {
+    text: 'Which feels more like home?',
+    opts: [
+      { type: 4, text: 'A quiet afternoon alone, sitting with something difficult and making something out of it.' },
+      { type: 7, text: 'A spontaneous outing with good company and no agenda except enjoying it.' }
+    ]
+  }
+]);
+
+addTB(4, 8, [
+  {
+    text: 'You\'re in a disagreement with someone you respect. It gets heated. Afterward, you feel most:',
+    opts: [
+      { type: 4, text: 'Inward — replaying it, feeling the hurt, wondering what it means about the relationship.' },
+      { type: 8, text: 'Clear — you said what needed to be said and you\'re not going to spiral about it.' }
+    ]
+  },
+  {
+    text: 'When you\'re angry, it tends to show as:',
+    opts: [
+      { type: 4, text: 'Withdrawal. You go quiet and inward and the hurt lives inside you for a while.' },
+      { type: 8, text: 'Confrontation. You name it immediately and directly — you don\'t hold it in.' }
+    ]
+  },
+  {
+    text: 'Someone you trust dismisses something you made or said. You:',
+    opts: [
+      { type: 4, text: 'Feel it deeply — their dismissal touches something about whether you\'re truly seen.' },
+      { type: 8, text: 'Push back. You\'re not going to let it slide just because they\'re someone you respect.' }
+    ]
+  }
+]);
+
+addTB(4, 9, [
+  {
+    text: 'A friend group is making plans you don\'t love but nobody\'s asking for input. You:',
+    opts: [
+      { type: 4, text: 'Say something — you\'d rather be honest about how you feel than go along with something that isn\'t right for you.' },
+      { type: 9, text: 'Go along with it. It\'s not worth the friction and they\'re probably going to have a good time anyway.' }
+    ]
+  },
+  {
+    text: 'A close relationship feels like it requires constant emotional labor. You:',
+    opts: [
+      { type: 4, text: 'Stay in it — depth and intensity are part of what makes relationships real to you.' },
+      { type: 9, text: 'Start to feel worn down — you need relationships that feel easy, not like work.' }
+    ]
+  },
+  {
+    text: 'When you imagine an ideal day alone, it looks more like:',
+    opts: [
+      { type: 4, text: 'Something rich and immersive — creating, feeling, following something deeply.' },
+      { type: 9, text: 'Something gentle and unscheduled — drifting through it without pressure or demands.' }
+    ]
+  }
+]);
+
+addTB(5, 6, [
+  {
+    text: 'You\'re starting something new — a job, a project, a relationship. Your first instinct is to:',
+    opts: [
+      { type: 5, text: 'Research and understand it thoroughly before you fully engage.' },
+      { type: 6, text: 'Figure out who the reliable people are and what the landscape actually looks like.' }
+    ]
+  },
+  {
+    text: 'When you feel unsafe or unsure, your first move is:',
+    opts: [
+      { type: 5, text: 'Retreat. You need to be alone, think it through, and rebuild your internal resources.' },
+      { type: 6, text: 'Look outward — reach for someone you trust, assess the situation, and prepare.' }
+    ]
+  },
+  {
+    text: 'A meeting runs long and turns emotionally charged. Afterward you feel:',
+    opts: [
+      { type: 5, text: 'Depleted. The exposure and intensity cost you something you\'ll need to recover.' },
+      { type: 6, text: 'Alert. You want to process what happened, check in with people, and make sure things are okay.' }
+    ]
+  }
+]);
+
+addTB(5, 7, [
+  {
+    text: 'You have a completely free Saturday. By noon you\'re most likely:',
+    opts: [
+      { type: 5, text: 'Deep into something you\'ve been meaning to properly think through or read about.' },
+      { type: 7, text: 'Out somewhere, or making plans — the unstructured morning already started to feel like waste.' }
+    ]
+  },
+  {
+    text: 'Your mind most naturally moves:',
+    opts: [
+      { type: 5, text: 'Inward and deep. You dig into one thing until you understand it fully.' },
+      { type: 7, text: 'Outward and wide. You want to touch everything — connections, possibilities, new angles.' }
+    ]
+  },
+  {
+    text: 'You\'re blocked on something important. Your first move is:',
+    opts: [
+      { type: 5, text: 'Step back and think. You need to understand the problem better before you can move.' },
+      { type: 7, text: 'Try a different angle. There\'s always another way in and you\'d rather keep moving than stop.' }
+    ]
+  }
+]);
+
+addTB(5, 8, [
+  {
+    text: 'You\'re facing a significant obstacle. Your natural first move is:',
+    opts: [
+      { type: 5, text: 'Understand it. You need to know what you\'re dealing with before you act.' },
+      { type: 8, text: 'Push through it. You trust your force of will more than your analysis.' }
+    ]
+  },
+  {
+    text: 'Someone challenges you in front of others. You:',
+    opts: [
+      { type: 5, text: 'Stay measured. You want to understand what they\'re actually saying before you respond.' },
+      { type: 8, text: 'Hold your ground immediately. You\'re not going to back down because there\'s an audience.' }
+    ]
+  },
+  {
+    text: 'A coworker keeps pulling you into conversations you didn\'t ask for. You:',
+    opts: [
+      { type: 5, text: 'Start managing the access. Your time and mental space aren\'t open-ended.' },
+      { type: 8, text: 'Tell them directly that you need them to stop. One clear conversation is better than slow resentment.' }
+    ]
+  }
+]);
+
+addTB(5, 9, [
+  {
+    text: 'Someone at work keeps pulling you into conversations you didn\'t ask for. You:',
+    opts: [
+      { type: 5, text: 'Find ways to limit access — your energy and focus aren\'t available on demand.' },
+      { type: 9, text: 'Go along with it more than you want to. It\'s hard to cut it off without feeling rude.' }
+    ]
+  },
+  {
+    text: 'A conflict is simmering between two people you care about. You:',
+    opts: [
+      { type: 5, text: 'Stay out of it. It\'s not your business and getting involved costs more than it\'s worth.' },
+      { type: 9, text: 'Try to be a calming presence — you don\'t want to take sides but you want the tension to resolve.' }
+    ]
+  },
+  {
+    text: 'A long social weekend leaves you feeling:',
+    opts: [
+      { type: 5, text: 'Genuinely depleted. You need real solitude to get back to yourself.' },
+      { type: 9, text: 'A little tired, but mostly fine. You enjoy it in the moment, even if you need some quiet after.' }
+    ]
+  }
+]);
+
+addTB(6, 7, [
+  {
+    text: 'A plan you were counting on falls through the day before. You:',
+    opts: [
+      { type: 6, text: 'Feel the jolt and go into problem-solving mode — you need a new plan and you need it now.' },
+      { type: 7, text: 'Feel briefly annoyed, then pivot. There\'s always something else and you\'d rather be moving.' }
+    ]
+  },
+  {
+    text: 'You\'re about to commit to something long-term. The hesitation you feel is mostly about:',
+    opts: [
+      { type: 6, text: 'Whether the people involved are trustworthy and whether this is actually going to hold.' },
+      { type: 7, text: 'Whether you\'re closing off other options prematurely.' }
+    ]
+  },
+  {
+    text: 'Thinking about the future makes you feel:',
+    opts: [
+      { type: 6, text: 'Alert. You want to be prepared, which means accounting for what could go wrong.' },
+      { type: 7, text: 'Excited. You see possibilities and you want to start moving toward them.' }
+    ]
+  }
+]);
+
+addTB(6, 8, [
+  {
+    text: 'Someone in your circle is being treated unfairly by someone with more power. You:',
+    opts: [
+      { type: 6, text: 'Rally support and think through the best approach carefully before acting.' },
+      { type: 8, text: 'Confront the person directly. That behavior doesn\'t get to stand.' }
+    ]
+  },
+  {
+    text: 'You\'re put in charge of a team during a crisis. You:',
+    opts: [
+      { type: 6, text: 'Consult quickly, clarify roles, and make sure everyone knows who to go to.' },
+      { type: 8, text: 'Take charge clearly and decisively — this is not the moment for consensus.' }
+    ]
+  },
+  {
+    text: 'When you feel threatened, you:',
+    opts: [
+      { type: 6, text: 'Assess, prepare, and seek allies. You want to be ready before you act.' },
+      { type: 8, text: 'Confront it. Waiting gives the other side more time to get the upper hand.' }
+    ]
+  }
+]);
+
+addTB(6, 9, [
+  {
+    text: 'There\'s unresolved tension with someone important to you. It\'s been sitting there for days. You:',
+    opts: [
+      { type: 6, text: 'Find a way to address it. The uncertainty is more unsettling than the conversation would be.' },
+      { type: 9, text: 'Wait it out. Bringing it up feels risky and you hope time smooths it over.' }
+    ]
+  },
+  {
+    text: 'Something feels off but you can\'t name what. You:',
+    opts: [
+      { type: 6, text: 'Stay alert and start paying attention to what might be causing it.' },
+      { type: 9, text: 'Try not to sit with it too long. You don\'t want the unease to take over.' }
+    ]
+  },
+  {
+    text: 'A plan falls through unexpectedly. In the hours after, you:',
+    opts: [
+      { type: 6, text: 'Work quickly to understand what happened and build a new plan.' },
+      { type: 9, text: 'Let yourself adjust slowly. Things have a way of working out.' }
+    ]
+  }
+]);
+
+addTB(7, 8, [
+  {
+    text: 'You\'re blocked — something or someone is standing between you and what you\'re going for. You:',
+    opts: [
+      { type: 7, text: 'Find another angle. There\'s always a way around and you\'d rather move than fight.' },
+      { type: 8, text: 'Go through it. You increase the pressure until the thing moves.' }
+    ]
+  },
+  {
+    text: 'When something isn\'t going your way, you:',
+    opts: [
+      { type: 7, text: 'Pivot. There\'s always another angle and you\'d rather be moving than stuck.' },
+      { type: 8, text: 'Push harder. You trust your force of will more than your ability to maneuver.' }
+    ]
+  },
+  {
+    text: 'Your relationship to limits is:',
+    opts: [
+      { type: 7, text: 'I work around them. Limits are invitations to find creative alternatives.' },
+      { type: 8, text: 'I push through them. Limits are obstacles, and obstacles get overcome.' }
+    ]
+  }
+]);
+
+addTB(7, 9, [
+  {
+    text: 'You get an unexpected free evening. Your first instinct is:',
+    opts: [
+      { type: 7, text: 'Find something to do with it — a spontaneous plan, something interesting, anything alive.' },
+      { type: 9, text: 'Settle into it. The unscheduled time itself is the gift.' }
+    ]
+  },
+  {
+    text: 'You cancel plans at the last minute. You feel:',
+    opts: [
+      { type: 7, text: 'Relieved — now I can do something more interesting or spontaneous instead.' },
+      { type: 9, text: 'Relieved — now I can just be home, comfortable, without having to gear up.' }
+    ]
+  },
+  {
+    text: 'Your energy in a group is usually:',
+    opts: [
+      { type: 7, text: 'High. I\'m often the one generating ideas and keeping things moving.' },
+      { type: 9, text: 'Steady. I\'m comfortable in the background — a calm presence that people seem to value.' }
+    ]
+  }
+]);
+
+addTB(8, 9, [
+  {
+    text: 'You\'re leading a group through a difficult decision and people are stalling. You:',
+    opts: [
+      { type: 8, text: 'Call it. You make the decision and move everyone forward — the stalling is making things worse.' },
+      { type: 9, text: 'Create space. You want everyone to feel heard before anything gets decided.' }
+    ]
+  },
+  {
+    text: 'Someone challenges you directly in front of other people. You:',
+    opts: [
+      { type: 8, text: 'Meet them on it. You\'re not going to back down or soften because there\'s an audience.' },
+      { type: 9, text: 'Try to de-escalate. The confrontation itself is the problem you want to resolve.' }
+    ]
+  },
+  {
+    text: 'What drains you more in a long week?',
+    opts: [
+      { type: 8, text: 'Being managed, second-guessed, or not trusted to handle things on my own.' },
+      { type: 9, text: 'Unresolved tension and the low hum of conflict that won\'t fully settle.' }
+    ]
+  }
+]);
+
+/* ─── STATE ─────────────────────────────────────────────────────────────── */
+
+let selectedVariants = null;
+
+function initVariants() {
+  selectedVariants = QUIZZES.map(q => {
+    const vi = Math.floor(Math.random() * q.variants.length);
+    return q.variants[vi];
+  });
+}
 
 let state = {
   screen: 'intro',
   page: 0,
-  answers: QUIZZES.map(q => new Array(q.statements.length).fill(null))
+  answers: QUIZZES.map(q => new Array(10).fill(null)),
+  tbPair: null,
+  tbAnswers: [null, null, null],
+  expandedType: null
 };
 
+const MAX_SCORE = 20;
+
+function pct(score) { return Math.round((score / MAX_SCORE) * 100); }
+
 function totalScore(qi) {
-  return state.answers[qi].reduce((s, a) => s + (a !== null ? SCORE_MAP[a] : 0), 0);
+  return state.answers[qi].reduce((s, a) => s + (a !== null ? [2,1,0][a] : 0), 0);
 }
 
-function allAnswered(qi) {
-  return state.answers[qi].every(a => a !== null);
+function allAnswered(qi) { return state.answers[qi].every(a => a !== null); }
+
+function computeScores() {
+  return QUIZZES.map((q, i) => ({ type: q.type, score: totalScore(i) }))
+    .sort((a, b) => b.score - a.score);
 }
+
+/* ─── TIEBREAKER LOGIC ───────────────────────────────────────────────────── */
+
+function getTBKey(a, b) {
+  return [a, b].sort((x, y) => x - y).join('-');
+}
+
+function needsTiebreaker(scores) {
+  if (scores.length < 2) return null;
+  const top = scores[0].score;
+  const second = scores[1].score;
+  if (top - second <= 2) {
+    return { a: scores[0].type, b: scores[1].type };
+  }
+  return null;
+}
+
+function resolveWithWings(scores) {
+  const top2 = scores.slice(0, 2).map(s => s.type);
+  const topScores = {};
+  scores.forEach(s => { topScores[s.type] = s.score; });
+
+  let bestType = top2[0];
+  let bestScore = -1;
+
+  top2.forEach(t => {
+    const wings = WINGS[t];
+    const wingSupport = wings.reduce((sum, w) => sum + (topScores[w] || 0), 0);
+    const triadSupport = TRIADS[triadOf(t)]
+      .filter(x => x !== t)
+      .reduce((sum, x) => sum + (topScores[x] || 0), 0);
+    const total = (topScores[t] * 2) + wingSupport + (triadSupport * 0.5);
+    if (total > bestScore) { bestScore = total; bestType = t; }
+  });
+
+  return bestType;
+}
+
+function tbScores() {
+  const counts = {};
+  state.tbAnswers.forEach(t => { if (t !== null) counts[t] = (counts[t] || 0) + 1; });
+  return counts;
+}
+
+function tbWinner() {
+  const counts = tbScores();
+  const { a, b } = state.tbPair;
+  const ca = counts[a] || 0;
+  const cb = counts[b] || 0;
+  if (ca > cb) return a;
+  if (cb > ca) return b;
+  return null;
+}
+
+/* ─── RENDER HELPERS ─────────────────────────────────────────────────────── */
 
 function renderDots() {
-  const el = document.getElementById('hdr-dots');
+  const el = document.getElementById('hdr-right');
+  if (!el) return;
   if (state.screen !== 'quiz') { el.innerHTML = ''; return; }
   let html = '<div class="progress-dots">';
   QUIZZES.forEach((_, i) => {
     let cls = 'dot';
     if (i < state.page) cls += ' done';
-    else if (i === state.page) cls += ' current';
+    else if (i === state.page) cls += ' cur';
     html += `<div class="${cls}"></div>`;
   });
-  html += `</div><span style="font-size:0.68rem;color:var(--text-faint);letter-spacing:0.08em;">${state.page + 1} / ${QUIZZES.length}</span>`;
+  html += `</div><span class="hdr-label">${state.page + 1} / ${QUIZZES.length}</span>`;
   el.innerHTML = html;
 }
 
-function render() {
-  const root = document.getElementById('root');
-  renderDots();
-  if (state.screen === 'intro') root.innerHTML = renderIntro();
-  else if (state.screen === 'quiz') root.innerHTML = renderQuiz();
-  else { root.innerHTML = renderResult(); animateBars(); }
-}
+/* ─── SCREENS ────────────────────────────────────────────────────────────── */
 
 function renderIntro() {
   return `<div class="screen intro">
-    <div class="intro-eyebrow">Personality Assessment</div>
+    <div class="eyebrow">Personality Assessment</div>
     <h1 class="intro-title">Find your<br><span>Enneagram type.</span></h1>
-    <p class="intro-sub">Nine short quizzes — one for each type. Rate each statement and we'll show you where you land across all nine types.</p>
+    <p class="intro-sub">Nine short quizzes, one for each type. Rate each statement honestly. When you're done, we'll show you exactly where you land — and help you narrow it down if the result is close.</p>
     <div class="intro-meta">
-      <div class="meta-item"><div class="meta-val">90</div><div class="meta-label">Statements</div></div>
-      <div class="meta-item"><div class="meta-val">9</div><div class="meta-label">Types</div></div>
-      <div class="meta-item"><div class="meta-val">~5</div><div class="meta-label">Minutes</div></div>
+      <div class="meta-item"><div class="meta-val">90</div><div class="meta-lbl">Statements</div></div>
+      <div class="meta-item"><div class="meta-val">9</div><div class="meta-lbl">Types</div></div>
+      <div class="meta-item"><div class="meta-val">~5</div><div class="meta-lbl">Minutes</div></div>
     </div>
     <button class="btn primary" onclick="startQuiz()">Begin</button>
   </div>`;
@@ -617,121 +1288,242 @@ function renderIntro() {
 
 function renderQuiz() {
   const q = QUIZZES[state.page];
-  const pct = (state.page / QUIZZES.length) * 100;
+  const vars = selectedVariants[state.page];
+  const pctFill = (state.page / QUIZZES.length) * 100;
   const complete = allAnswered(state.page);
   const isLast = state.page === QUIZZES.length - 1;
 
-  const stmts = q.statements.map((s, si) => {
+  const stmts = vars.map((s, si) => {
     const ans = state.answers[state.page][si];
     const answered = ans !== null ? ' answered' : '';
-    return `<div class="statement${answered}">
+    return `<div class="statement${answered}" id="stmt-${si}">
       <div class="stmt-text">${s}</div>
       <div class="opts">
-        <button class="opt agree${ans === 0 ? ' selected' : ''}" onclick="pick(${state.page},${si},0)">Agree</button>
-        <button class="opt neutral${ans === 1 ? ' selected' : ''}" onclick="pick(${state.page},${si},1)">Neutral</button>
-        <button class="opt disagree${ans === 2 ? ' selected' : ''}" onclick="pick(${state.page},${si},2)">Disagree</button>
+        <button class="opt agree${ans===0?' selected':''}" onclick="pick(${state.page},${si},0)">Agree</button>
+        <button class="opt neutral${ans===1?' selected':''}" onclick="pick(${state.page},${si},1)">Neutral</button>
+        <button class="opt disagree${ans===2?' selected':''}" onclick="pick(${state.page},${si},2)">Disagree</button>
       </div>
     </div>`;
   }).join('');
 
   return `<div class="screen quiz">
-    <div class="progress-bar"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pctFill}%"></div></div>
     <div class="quiz-header">
-      <div class="quiz-type-badge">${q.id}</div>
+      <div class="quiz-badge">${q.id}</div>
       <div class="quiz-title-block">
-        <div class="quiz-eyebrow">Quiz ${state.page + 1} of ${QUIZZES.length}</div>
+        <div class="quiz-sub">Quiz ${state.page+1} of ${QUIZZES.length}</div>
         <div class="quiz-heading">How much does each statement resonate?</div>
       </div>
     </div>
     <div class="statements">${stmts}</div>
-    <div class="nav">
-      <button class="btn" onclick="goPage(-1)" ${state.page === 0 ? 'disabled' : ''}>Back</button>
+    <div class="nav" id="quiz-nav">
+      <button class="btn" onclick="goPage(-1)" ${state.page===0?'disabled':''}>Back</button>
       ${complete
-        ? `<button class="btn primary" onclick="${isLast ? 'finish()' : 'goPage(1)'}">${isLast ? 'See my type' : 'Next'}</button>`
-        : `<span class="incomplete-hint">Answer all to continue</span>`
-      }
+        ? `<button class="btn primary" onclick="${isLast?'finishQuiz()':'goPage(1)'}">${isLast?'See results':'Next'}</button>`
+        : `<span class="incomplete-hint">Answer all to continue</span>`}
     </div>
   </div>`;
 }
 
-function renderResult() {
-  const scores = QUIZZES.map((q, i) => ({ ...q, score: totalScore(i) }));
-  scores.sort((a, b) => b.score - a.score);
-  const top = scores[0];
-  const max = 20;
-  const isTie = scores[1] && scores[1].score === top.score;
+function renderTiebreaker() {
+  const { a, b } = state.tbPair;
+  const ta = TYPES[a]; const tb = TYPES[b];
+  const key = getTBKey(a, b);
+  const scenarios = getTBScenarios(key);
+  const allDone = state.tbAnswers.every(x => x !== null);
 
-  const rows = scores.map((s, i) => {
-    const pct = Math.round((s.score / max) * 100);
-    return `<div class="score-row${i === 0 ? ' top' : ''}">
-      <div class="sr-num">${s.type}</div>
-      <div class="sr-name">${s.name.replace('The ', '')}</div>
-      <div class="sr-track"><div class="sr-fill" style="width:0%" data-w="${pct}"></div></div>
-      <div class="sr-val">${s.score}</div>
+  let scenHtml = scenarios.map((sc, i) => {
+    const chosen = state.tbAnswers[i];
+    return `<div class="scenario">
+      <div class="scenario-num">Scenario ${i+1} of ${scenarios.length}</div>
+      <div class="scenario-text">${sc.text}</div>
+      <div class="scenario-opts">
+        ${sc.opts.map((o, oi) => `<button class="scen-opt${chosen===o.type?' selected':''}" onclick="pickTB(${i},${o.type})">${o.text}</button>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  return `<div class="screen tiebreak">
+    <div class="tiebreak-header">
+      <div class="tiebreak-eyebrow">One more step</div>
+      <h2 class="tiebreak-heading">Your results are close. One more step.</h2>
+      <p class="tiebreak-sub">Read each scenario and choose the response that feels most like you — not the one you wish were true, but the one that actually is.</p>
+    </div>
+    ${scenHtml}
+    <div class="nav">
+      <span class="tb-progress">${state.tbAnswers.filter(x=>x!==null).length} of ${scenarios.length} answered</span>
+      ${allDone ? `<button class="btn primary" onclick="finishTB()">See my type</button>` : `<span class="incomplete-hint">Choose all to continue</span>`}
+    </div>
+  </div>`;
+}
+
+function renderResult(topTypeOverride) {
+  const scores = computeScores();
+  const topType = topTypeOverride || scores[0].type;
+  const topData = TYPES[topType];
+  const topScore = scores.find(s => s.type === topType)?.score || 0;
+  const topPct = pct(topScore);
+
+  const expanded = state.expandedType ?? topType;
+
+  const cards = scores.map((s, i) => {
+    const t = TYPES[s.type];
+    const p = pct(s.score);
+    const isExp = s.type === expanded;
+    return `<div class="type-card${isExp?' expanded':''}" id="tc-${s.type}" onclick="toggleType(${s.type})">
+      <div class="type-card-header">
+        <div class="tc-num">${s.type}</div>
+        <div class="tc-info">
+          <div class="tc-name">${t.name}</div>
+        </div>
+        <div class="tc-bar-wrap">
+          <div class="tc-bar-track"><div class="tc-bar-fill" style="width:0%" data-w="${p}"></div></div>
+          <div class="tc-pct">${p}%</div>
+        </div>
+      </div>
+      <div class="type-card-body">
+        <div class="type-card-desc">${t.desc}</div>
+      </div>
     </div>`;
   }).join('');
 
   return `<div class="screen result">
     <div class="result-circle-wrap">
       <div class="result-circle">
-        <div class="result-circle-num">${top.type}</div>
-        <div class="result-circle-label">Type</div>
+        <div class="result-circle-num">${topType}</div>
+        <div class="result-circle-lbl">Type</div>
       </div>
     </div>
     <div class="result-connector"></div>
-    <h2 class="result-name">${top.name}</h2>
-    <div class="result-tagline">${top.tagline}</div>
-    <div class="result-desc">${top.desc}</div>
-    ${isTie ? `<p class="tie-note">You scored equally on two or more types. The one that feels most true across your whole life — not just today — is likely your type.</p>` : ''}
-    <div class="scores-section">
-      <div class="scores-eyebrow">Full breakdown</div>
-      <div class="score-rows">${rows}</div>
-    </div>
+    <h2 class="result-name">${topData.name}</h2>
+    <div class="result-tagline">${topData.tagline}</div>
+    <div class="result-pct">You scored <strong>${topPct}%</strong> on this type.</div>
+    <div class="result-desc">${topData.desc}</div>
+    <div class="breakdown-label">All types — tap to explore</div>
+    <div class="type-cards">${cards}</div>
     <div class="result-footer">
-      <button class="btn" onclick="retake()">Start over</button>
+      <button class="retake" onclick="retake()">Start over</button>
     </div>
   </div>`;
 }
 
+/* ─── RENDER ─────────────────────────────────────────────────────────────── */
+
+function render(topTypeOverride) {
+  const root = document.getElementById('root');
+  renderDots();
+  if (state.screen === 'intro') root.innerHTML = renderIntro();
+  else if (state.screen === 'quiz') root.innerHTML = renderQuiz();
+  else if (state.screen === 'tiebreak') root.innerHTML = renderTiebreaker();
+  else { root.innerHTML = renderResult(topTypeOverride); animateBars(); }
+}
+
 function animateBars() {
   requestAnimationFrame(() => {
-    document.querySelectorAll('.sr-fill[data-w]').forEach(b => {
+    document.querySelectorAll('.tc-bar-fill[data-w]').forEach(b => {
       b.style.width = b.dataset.w + '%';
     });
   });
 }
 
-function startQuiz() { state.screen = 'quiz'; state.page = 0; render(); scroll(0,0); }
+/* ─── ACTIONS ────────────────────────────────────────────────────────────── */
+
+function startQuiz() {
+  initVariants();
+  state.screen = 'quiz';
+  state.page = 0;
+  render();
+  scroll(0, 0);
+}
+
 function pick(qi, si, oi) {
   state.answers[qi][si] = oi;
-  // Surgical update — only touch the affected statement, not the whole page
-  const stmtEls = document.querySelectorAll('.statement');
-  if (stmtEls[si]) {
-    stmtEls[si].classList.add('answered');
-    stmtEls[si].querySelector('.stmt-text').style.color = '';
-    const opts = stmtEls[si].querySelectorAll('.opt');
-    opts.forEach((btn, idx) => {
+  const stmtEl = document.getElementById(`stmt-${si}`);
+  if (stmtEl) {
+    stmtEl.classList.toggle('answered', true);
+    stmtEl.querySelectorAll('.opt').forEach((btn, idx) => {
       btn.classList.toggle('selected', idx === oi);
     });
   }
-  // Update nav area in case this completes the page
   const complete = allAnswered(qi);
   const isLast = state.page === QUIZZES.length - 1;
-  const nav = document.querySelector('.nav');
-  if (nav) {
-    const right = nav.querySelector('.btn.primary, .incomplete-hint');
-    if (complete && right && right.classList.contains('incomplete-hint')) {
+  const nav = document.getElementById('quiz-nav');
+  if (nav && complete) {
+    const hint = nav.querySelector('.incomplete-hint');
+    if (hint) {
       const btn = document.createElement('button');
       btn.className = 'btn primary';
-      btn.textContent = isLast ? 'See my type' : 'Next';
-      btn.setAttribute('onclick', isLast ? 'finish()' : 'goPage(1)');
-      right.replaceWith(btn);
+      btn.textContent = isLast ? 'See results' : 'Next';
+      btn.setAttribute('onclick', isLast ? 'finishQuiz()' : 'goPage(1)');
+      hint.replaceWith(btn);
     }
   }
 }
-function goPage(d) { state.page = Math.max(0, Math.min(QUIZZES.length-1, state.page+d)); render(); window.scrollTo({top:0,behavior:'smooth'}); }
-function finish() { state.screen = 'result'; render(); window.scrollTo({top:0,behavior:'smooth'}); }
-function retake() { state.screen='intro'; state.page=0; state.answers=QUIZZES.map(q=>new Array(q.statements.length).fill(null)); render(); scroll(0,0); }
+
+function goPage(d) {
+  state.page = Math.max(0, Math.min(QUIZZES.length - 1, state.page + d));
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function finishQuiz() {
+  const scores = computeScores();
+  const tb = needsTiebreaker(scores);
+  if (tb) {
+    const key = getTBKey(tb.a, tb.b);
+    if (getTBScenarios(key).length) {
+      state.tbPair = tb;
+      state.tbAnswers = [null, null, null];
+      state.screen = 'tiebreak';
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+  }
+  state.screen = 'result';
+  state.expandedType = null;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function pickTB(i, type) {
+  state.tbAnswers[i] = type;
+  render();
+}
+
+function finishTB() {
+  const winner = tbWinner();
+  let topType;
+  if (winner) {
+    topType = winner;
+  } else {
+    topType = resolveWithWings(computeScores());
+  }
+  state.screen = 'result';
+  state.expandedType = topType;
+  render(topType);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleType(type) {
+  state.expandedType = state.expandedType === type ? null : type;
+  document.querySelectorAll('.type-card').forEach(card => {
+    const t = parseInt(card.id.replace('tc-', ''));
+    card.classList.toggle('expanded', t === state.expandedType);
+  });
+  animateBars();
+}
+
+function retake() {
+  state = {
+    screen: 'intro', page: 0,
+    answers: QUIZZES.map(() => new Array(10).fill(null)),
+    tbPair: null, tbAnswers: [null, null, null], expandedType: null
+  };
+  selectedVariants = null;
+  render();
+  scroll(0, 0);
+}
 
 render();
 </script>
