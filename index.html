@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enneagram Type Quiz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #1e1e1c;
+    --bg-2: #252522;
+    --bg-3: #2e2e2a;
+    --surface: #2a2a27;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.18);
+    --text: #e8e4dc;
+    --text-soft: #9e9a92;
+    --text-faint: #5a5750;
+    --accent: #e8876a;
+    --accent-dim: rgba(232,135,106,0.15);
+    --accent-dim2: rgba(232,135,106,0.08);
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sora', system-ui, sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  /* Subtle grain texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* Header */
+  .site-header {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo {
+    font-size: 0.75rem;
+    font-weight: 400;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-soft);
+  }
+
+  .progress-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.72rem;
+    color: var(--text-faint);
+    letter-spacing: 0.08em;
+  }
+
+  .progress-dots {
+    display: flex;
+    gap: 4px;
+  }
+
+  .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--border-hover);
+    transition: background 0.3s;
+  }
+
+  .dot.done { background: var(--accent); }
+  .dot.current { background: var(--text-soft); }
+
+  /* Main layout */
+  main {
+    flex: 1;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 1.5rem 4rem;
+  }
+
+  /* Screens */
+  .screen { width: 100%; max-width: 640px; }
+
+  /* ── INTRO ── */
+  .intro {
+    padding-top: clamp(4rem, 10vh, 8rem);
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  .intro-eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+  }
+
+  .intro-title {
+    font-size: clamp(2.6rem, 6vw, 4.2rem);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+  }
+
+  .intro-title span { color: var(--accent); }
+
+  .intro-sub {
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: var(--text-soft);
+    max-width: 440px;
+    margin-bottom: 3rem;
+  }
+
+  .intro-meta {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .meta-val {
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .meta-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  /* ── QUIZ ── */
+  .quiz {
+    padding-top: 3rem;
+    animation: fadeUp 0.4s ease forwards;
+  }
+
+  .quiz-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 2.5rem;
+  }
+
+  .quiz-type-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--bg);
+    font-size: 1rem;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .quiz-title-block { flex: 1; padding-left: 1rem; }
+
+  .quiz-eyebrow {
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 0.3rem;
+  }
+
+  .quiz-heading {
+    font-size: clamp(1.4rem, 3.5vw, 2rem);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    color: var(--text);
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    width: 100%;
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 2rem;
+    position: relative;
+  }
+
+  .progress-bar-fill {
+    position: absolute;
+    left: 0; top: 0;
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* Statements */
+  .statements { display: flex; flex-direction: column; gap: 2px; }
+
+  .statement {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.1rem;
+    margin-bottom: 6px;
+    transition: border-color 0.2s, background 0.2s;
+    background: transparent;
+  }
+
+  .statement.answered {
+    border-color: rgba(232,135,106,0.2);
+    background: var(--accent-dim2);
+  }
+
+  .stmt-text {
+    font-size: 0.88rem;
+    line-height: 1.55;
+    color: var(--text-soft);
+    margin-bottom: 0.75rem;
+    transition: color 0.2s;
+  }
+
+  .statement.answered .stmt-text { color: var(--text); }
+
+  .opts {
+    display: flex;
+    gap: 6px;
+  }
+
+  .opt {
+    flex: 1;
+    padding: 7px 4px;
+    font-family: 'Sora', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 400;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-faint);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+
+  .opt:hover { border-color: var(--border-hover); color: var(--text-soft); background: var(--bg-3); }
+  .opt.selected.agree { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  .opt.selected.neutral { background: var(--bg-3); border-color: var(--border-hover); color: var(--text); }
+  .opt.selected.disagree { background: var(--surface); border-color: var(--border); color: var(--text-soft); }
+
+  /* Nav */
+  .nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn {
+    font-family: 'Sora', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 12px 28px;
+    border-radius: 100px;
+    border: 1px solid var(--border-hover);
+    background: transparent;
+    color: var(--text-soft);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn:hover { border-color: var(--text-soft); color: var(--text); }
+  .btn:disabled { opacity: 0.2; cursor: default; pointer-events: none; }
+
+  .btn.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--bg);
+    font-weight: 500;
+  }
+
+  .btn.primary:hover { background: #f09a7e; border-color: #f09a7e; }
+
+  .incomplete-hint {
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    letter-spacing: 0.06em;
+  }
+
+  /* ── RESULT ── */
+  .result {
+    padding-top: 3rem;
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  .result-circle-wrap {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+    position: relative;
+  }
+
+  .result-circle {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 1px solid rgba(232,135,106,0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* Decorative ring */
+  .result-circle::before {
+    content: '';
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+  }
+
+  .result-circle-num {
+    font-size: 2.8rem;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .result-circle-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  /* Connector line from circle */
+  .result-connector {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, rgba(232,135,106,0.5), transparent);
+    margin: 0 auto 2rem;
+  }
+
+  .result-name {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    text-align: center;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .result-tagline {
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .result-desc {
+    font-size: 0.92rem;
+    line-height: 1.8;
+    color: var(--text-soft);
+    text-align: center;
+    max-width: 500px;
+    margin: 0 auto 3rem;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+  }
+
+  /* Score breakdown */
+  .scores-section {
+    margin-bottom: 3rem;
+  }
+
+  .scores-eyebrow {
+    font-size: 0.65rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 1.25rem;
+    text-align: center;
+  }
+
+  .score-rows { display: flex; flex-direction: column; gap: 10px; }
+
+  .score-row {
+    display: grid;
+    grid-template-columns: 28px 1fr 100px 32px;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .sr-num {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-faint);
+    text-align: center;
+  }
+
+  .score-row.top .sr-num { color: var(--accent); }
+
+  .sr-name {
+    font-size: 0.78rem;
+    color: var(--text-soft);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .score-row.top .sr-name { color: var(--text); }
+
+  .sr-track {
+    height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .sr-fill {
+    height: 100%;
+    background: var(--text-faint);
+    border-radius: 2px;
+    transition: width 1s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .score-row.top .sr-fill { background: var(--accent); }
+
+  .sr-val {
+    font-size: 0.72rem;
+    color: var(--text-faint);
+    text-align: right;
+    font-weight: 500;
+  }
+
+  .result-footer {
+    display: flex;
+    justify-content: center;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .tie-note {
+    font-size: 0.78rem;
+    line-height: 1.7;
+    color: var(--text-faint);
+    text-align: center;
+    font-style: italic;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Mobile */
+  @media (max-width: 520px) {
+    .site-header { padding: 1.25rem 1.25rem; }
+    main { padding: 0 1rem 3rem; }
+    .intro { padding-top: 2.5rem; }
+    .score-row { grid-template-columns: 24px 1fr 70px 28px; gap: 8px; }
+    .opts { gap: 4px; }
+    .opt { font-size: 0.62rem; padding: 7px 2px; }
+    .intro-meta { gap: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="logo">Enneagram &amp; You</div>
+  <div class="progress-pill" id="hdr-dots"></div>
+</header>
+
+<main>
+  <div id="root"></div>
+</main>
+
+<script>
+const QUIZZES = [
+  { id: 'A', type: 4, name: 'The Individualist', tagline: 'Sensitive · Introspective · Expressive',
+    desc: 'You feel things with uncommon depth and search for meaning in almost everything. Identity and authenticity matter to you enormously — you would rather be misunderstood than false. You carry both a rich inner life and a persistent sense that something essential is missing, which drives your creativity and your longing.',
+    statements: ['I am sensitive.','I strive to have a unique style.','I look for meaning in just about everything.','I am often misunderstood.','I am highly creative.','Being authentic is important even if it means I\'m not popular.','I tend to feel jealous of others, even though I can\'t explain why.','I am comfortable with dark and intense emotions.','I can be pretty sentimental and long for the past.','I value self-awareness, following my heart, and staying true to who I am.']
+  },
+  { id: 'B', type: 7, name: 'The Enthusiast', tagline: 'Spontaneous · Versatile · Acquisitive',
+    desc: 'You move toward the world with energy and appetite. New experiences pull at you constantly and you resist being pinned down — by boredom, by commitment, or by pain. You reframe difficulty with remarkable speed and keep your options deliberately open, which makes you endlessly generative and occasionally difficult to hold.',
+    statements: ['When I have an idea, I just go for it.','I love thinking about my next adventure.','I\'m good at finding the silver lining in most situations.','My independence is very important to me.','New experiences make me come alive.','I can be pretty spontaneous and fun-loving.','I am most likely to keep my options open.','I loathe being bored.','I value pleasure, variety, and my freedom.','I am highly resilient and can bounce back from upsetting setbacks.']
+  },
+  { id: 'C', type: 1, name: 'The Reformer', tagline: 'Principled · Purposeful · Self-Controlled',
+    desc: 'You hold yourself — and often the world around you — to a high standard. You notice errors that others walk past, believe there is usually a right way to do things, and feel a quiet frustration when things fall short. Integrity drives you. So does a private inner critic that rarely goes quiet.',
+    statements: ['I can be pretty hard on myself.','Several people in my life come to me for advice.','I\'m excellent at finding mistakes — typos, things out of place, and so on.','It\'s difficult for me to relax when I know there is so much to get done.','I find myself feeling frustrated and irritated when things are not done correctly.','I believe that there is a right way to do everything.','I\'m great at finding what needs to be fixed or corrected.','I am independent and can get things done on my own rather than depending on others.','I\'m a self-disciplined person.','I value truth, justice, and living by my values.']
+  },
+  { id: 'D', type: 8, name: 'The Challenger', tagline: 'Powerful · Decisive · Willful',
+    desc: 'You lead with force and rarely back down. Confrontation does not unsettle you the way it does others — in fact, you trust it more than pleasantries. Beneath the tough exterior sits a person who cares fiercely about those they love and who takes the protection of others seriously. Vulnerability is the thing you guard most carefully.',
+    statements: ['I am known for my strength.','I have a tough exterior, but most people don\'t realize I am quite soft on the inside.','I want the outside world to understand that I am a force to be reckoned with.','Confrontation does not bother me.','I feel as though I can\'t let my guard down.','People have sometimes referred to me as being "too much" or coming on too strongly.','I often feel as though I need to protect myself, my loved ones, and those less fortunate.','I feel an overwhelming responsibility to always be a pillar of strength.','When I\'m stressed, I tend to overanalyze to regain some form of control.','I value strength, leadership, and candor.']
+  },
+  { id: 'E', type: 3, name: 'The Achiever', tagline: 'Adaptable · Excelling · Driven',
+    desc: 'You know how to read a room and shape yourself to win it. Success matters to you — not just as an outcome but as proof of your worth. You set goals, pursue them with focus, and genuinely want to help others reach their potential too. The harder question, one you may circle back to privately, is who you are when no one is watching.',
+    statements: ['Having success is very important to me.','Other people\'s opinions matter to me.','I work hard at trying to earn the respect and admiration of others.','It doesn\'t have to be perfect; it just needs to get done.','I like to set goals for myself.','Encouragement and affirmations from my peers feel meaningful.','I know how to work a room.','I have a very competitive spirit; I like to win.','I enjoy encouraging others and helping them live up to their potential.','I value reaching my goals, achieving something, and being admired.']
+  },
+  { id: 'F', type: 5, name: 'The Investigator', tagline: 'Perceptive · Innovative · Secretive',
+    desc: 'You live in the mind. Knowledge is your primary resource, and solitude is how you replenish. You observe more than you disclose, and you prefer to fully understand something before acting on it. Social energy costs you in a way others don\'t always see. What looks like aloofness is often just conservation.',
+    statements: ['I think that knowledge is everything.','I want to connect with others but I simultaneously fear the energy it requires.','I need a lot of alone time to recharge, think, and learn.','I\'m more comfortable having an intellectual conversation than an emotional one.','I need to fully understand something before I can act on it.','I can be a pretty private person.','My deep well of knowledge has sometimes come across as arrogant or condescending.','Being self-reliant is very important to me.','I enjoy learning and pursuing my interests.','I value innovation, privacy, and intelligence.']
+  },
+  { id: 'G', type: 9, name: 'The Peacemaker', tagline: 'Receptive · Reassuring · Agreeable',
+    desc: 'You have an unusual capacity to see all sides of a situation and a genuine desire for everyone around you to be okay. Conflict feels like a threat to something essential, so you tend to let things go rather than press. You are patient, inclusive, and often the steadying presence in a room — but your own wants can quietly recede.',
+    statements: ['I prefer to let things go rather than have a confrontation.','I am a great listener.','I strive to live in a peaceful and calm environment.','I enjoy being creative.','I am accepting and inclusive.','I wish I had more ambition.','I am an optimist.','I typically see the good in people.','I can usually see all sides of a situation.','I value serenity, optimism, and maintaining inner peace.']
+  },
+  { id: 'H', type: 6, name: 'The Loyalist', tagline: 'Committed · Security-Oriented · Engaging',
+    desc: 'Loyalty is your bedrock. You take responsibility seriously, think carefully before acting, and don\'t give your trust quickly — but when you do, it tends to hold. Uncertainty and potential threats occupy your mind in ways that can be exhausting. You have a sharp sense of what could go wrong, which makes you both a reliable planner and a habitual worrier.',
+    statements: ['I am very loyal to my family and friends.','I can be suspicious of people\'s motives.','I take my responsibilities seriously.','I am dedicated and hardworking.','The future worries me and I can\'t stop obsessing over it.','It\'s vital that I feel supported.','It\'s difficult for me to spring into action before assessing all the possibilities.','It takes me a fair amount of time to trust people.','I often have daydreams or actual plans to rebel against social norms, rules, and authority figures.','I value loyalty, being supportive, and being collaborative.']
+  },
+  { id: 'I', type: 2, name: 'The Helper', tagline: 'Generous · Demonstrative · People-Pleasing',
+    desc: 'You attune to what people need and move to meet it — sometimes before they\'ve even named it themselves. Relationships are where you live. Being needed makes you feel valuable and loved, which means your generosity is real but not entirely selfless. Learning to receive, and to name your own needs, tends to be the deeper work.',
+    statements: ['Being needed makes me feel proud and valuable.','Relationships are the most important thing in my life.','I am excellent at understanding what people need.','In most relationships, I give more than I take.','I tend to focus on other people\'s emotions.','I tend to neglect my own needs.','People usually come to me when they\'re hurting because I\'m a good friend.','It\'s important for me to feel needed.','I have used flattery in the past to get people to like me.','I value emotional closeness and human connection above all else.']
+  }
+];
+
+const SCORE_MAP = [2, 1, 0];
+
+let state = {
+  screen: 'intro',
+  page: 0,
+  answers: QUIZZES.map(q => new Array(q.statements.length).fill(null))
+};
+
+function totalScore(qi) {
+  return state.answers[qi].reduce((s, a) => s + (a !== null ? SCORE_MAP[a] : 0), 0);
+}
+
+function allAnswered(qi) {
+  return state.answers[qi].every(a => a !== null);
+}
+
+function renderDots() {
+  const el = document.getElementById('hdr-dots');
+  if (state.screen !== 'quiz') { el.innerHTML = ''; return; }
+  let html = '<div class="progress-dots">';
+  QUIZZES.forEach((_, i) => {
+    let cls = 'dot';
+    if (i < state.page) cls += ' done';
+    else if (i === state.page) cls += ' current';
+    html += `<div class="${cls}"></div>`;
+  });
+  html += `</div><span style="font-size:0.68rem;color:var(--text-faint);letter-spacing:0.08em;">${state.page + 1} / ${QUIZZES.length}</span>`;
+  el.innerHTML = html;
+}
+
+function render() {
+  const root = document.getElementById('root');
+  renderDots();
+  if (state.screen === 'intro') root.innerHTML = renderIntro();
+  else if (state.screen === 'quiz') root.innerHTML = renderQuiz();
+  else { root.innerHTML = renderResult(); animateBars(); }
+}
+
+function renderIntro() {
+  return `<div class="screen intro">
+    <div class="intro-eyebrow">Personality Assessment</div>
+    <h1 class="intro-title">Find your<br><span>Enneagram type.</span></h1>
+    <p class="intro-sub">Nine short quizzes — one for each type. Rate each statement and we'll show you where you land across all nine types.</p>
+    <div class="intro-meta">
+      <div class="meta-item"><div class="meta-val">90</div><div class="meta-label">Statements</div></div>
+      <div class="meta-item"><div class="meta-val">9</div><div class="meta-label">Types</div></div>
+      <div class="meta-item"><div class="meta-val">~5</div><div class="meta-label">Minutes</div></div>
+    </div>
+    <button class="btn primary" onclick="startQuiz()">Begin</button>
+  </div>`;
+}
+
+function renderQuiz() {
+  const q = QUIZZES[state.page];
+  const pct = (state.page / QUIZZES.length) * 100;
+  const complete = allAnswered(state.page);
+  const isLast = state.page === QUIZZES.length - 1;
+
+  const stmts = q.statements.map((s, si) => {
+    const ans = state.answers[state.page][si];
+    const answered = ans !== null ? ' answered' : '';
+    return `<div class="statement${answered}">
+      <div class="stmt-text">${s}</div>
+      <div class="opts">
+        <button class="opt agree${ans === 0 ? ' selected' : ''}" onclick="pick(${state.page},${si},0)">Agree</button>
+        <button class="opt neutral${ans === 1 ? ' selected' : ''}" onclick="pick(${state.page},${si},1)">Neutral</button>
+        <button class="opt disagree${ans === 2 ? ' selected' : ''}" onclick="pick(${state.page},${si},2)">Disagree</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  return `<div class="screen quiz">
+    <div class="progress-bar"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+    <div class="quiz-header">
+      <div class="quiz-type-badge">${q.id}</div>
+      <div class="quiz-title-block">
+        <div class="quiz-eyebrow">Quiz ${state.page + 1} of ${QUIZZES.length}</div>
+        <div class="quiz-heading">How much does each statement resonate?</div>
+      </div>
+    </div>
+    <div class="statements">${stmts}</div>
+    <div class="nav">
+      <button class="btn" onclick="goPage(-1)" ${state.page === 0 ? 'disabled' : ''}>Back</button>
+      ${complete
+        ? `<button class="btn primary" onclick="${isLast ? 'finish()' : 'goPage(1)'}">${isLast ? 'See my type' : 'Next'}</button>`
+        : `<span class="incomplete-hint">Answer all to continue</span>`
+      }
+    </div>
+  </div>`;
+}
+
+function renderResult() {
+  const scores = QUIZZES.map((q, i) => ({ ...q, score: totalScore(i) }));
+  scores.sort((a, b) => b.score - a.score);
+  const top = scores[0];
+  const max = 20;
+  const isTie = scores[1] && scores[1].score === top.score;
+
+  const rows = scores.map((s, i) => {
+    const pct = Math.round((s.score / max) * 100);
+    return `<div class="score-row${i === 0 ? ' top' : ''}">
+      <div class="sr-num">${s.type}</div>
+      <div class="sr-name">${s.name.replace('The ', '')}</div>
+      <div class="sr-track"><div class="sr-fill" style="width:0%" data-w="${pct}"></div></div>
+      <div class="sr-val">${s.score}</div>
+    </div>`;
+  }).join('');
+
+  return `<div class="screen result">
+    <div class="result-circle-wrap">
+      <div class="result-circle">
+        <div class="result-circle-num">${top.type}</div>
+        <div class="result-circle-label">Type</div>
+      </div>
+    </div>
+    <div class="result-connector"></div>
+    <h2 class="result-name">${top.name}</h2>
+    <div class="result-tagline">${top.tagline}</div>
+    <div class="result-desc">${top.desc}</div>
+    ${isTie ? `<p class="tie-note">You scored equally on two or more types. The one that feels most true across your whole life — not just today — is likely your type.</p>` : ''}
+    <div class="scores-section">
+      <div class="scores-eyebrow">Full breakdown</div>
+      <div class="score-rows">${rows}</div>
+    </div>
+    <div class="result-footer">
+      <button class="btn" onclick="retake()">Start over</button>
+    </div>
+  </div>`;
+}
+
+function animateBars() {
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.sr-fill[data-w]').forEach(b => {
+      b.style.width = b.dataset.w + '%';
+    });
+  });
+}
+
+function startQuiz() { state.screen = 'quiz'; state.page = 0; render(); scroll(0,0); }
+function pick(qi, si, oi) { state.answers[qi][si] = oi; render(); }
+function goPage(d) { state.page = Math.max(0, Math.min(QUIZZES.length-1, state.page+d)); render(); window.scrollTo({top:0,behavior:'smooth'}); }
+function finish() { state.screen = 'result'; render(); window.scrollTo({top:0,behavior:'smooth'}); }
+function retake() { state.screen='intro'; state.page=0; state.answers=QUIZZES.map(q=>new Array(q.statements.length).fill(null)); render(); scroll(0,0); }
+
+render();
+</script>
+</body>
+</html>
