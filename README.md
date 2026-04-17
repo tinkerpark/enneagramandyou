@@ -1,6 +1,6 @@
 # Enneagram Type Quiz
 
-A clean, self-contained Enneagram personality quiz based on *The Enneagram & You*. No dependencies, no build step, no server required — just one HTML file.
+A self-contained Enneagram personality quiz. No dependencies, no build step, no server required — just one HTML file.
 
 ## How to use
 
@@ -15,27 +15,16 @@ Download `index.html` and open it in any browser.
 
 ## What it covers
 
-Nine quizzes, one per Enneagram type. Each quiz contains ten statements rated Agree / Neutral / Disagree. When you finish all nine, the app scores your responses and identifies your type, with a brief description and a full score breakdown across all nine types.
+Ninety statements across nine quizzes. When you finish, the app scores your responses, identifies your type with a percentage and description, and shows a full breakdown across all nine types so you can see where you land across the whole picture.
 
-The nine types:
-
-| Quiz | Type | Name |
-|------|------|------|
-| A | 4 | The Individualist |
-| B | 7 | The Enthusiast |
-| C | 1 | The Reformer |
-| D | 8 | The Challenger |
-| E | 3 | The Achiever |
-| F | 5 | The Investigator |
-| G | 9 | The Peacemaker |
-| H | 6 | The Loyalist |
-| I | 2 | The Helper |
+If your top results are close, a short tiebreaker round helps narrow it down before revealing your type.
 
 ## Notes
 
 - No data is collected. Everything runs in the browser.
+- The quiz order and question phrasing randomize on every new session.
 - Works on mobile and desktop.
-- No internet connection required after initial load (fonts load from Google Fonts on first visit; the quiz itself functions offline).
+- No internet connection required after initial load (fonts load from Google Fonts on first visit).
 
 ## Source
 
