@@ -1168,13 +1168,27 @@ addTB(8, 9, [
 /* ─── STATE ─────────────────────────────────────────────────────────────── */
 
 let selectedVariants = null;
+let quizOrder = null;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 function initVariants() {
-  selectedVariants = QUIZZES.map(q => {
+  quizOrder = shuffle(QUIZZES.map((_, i) => i));
+  selectedVariants = quizOrder.map(qi => {
+    const q = QUIZZES[qi];
     const vi = Math.floor(Math.random() * q.variants.length);
     return q.variants[vi];
   });
 }
+
+function orderedQuiz(i) { return QUIZZES[quizOrder[i]]; }
 
 let state = {
   screen: 'intro',
@@ -1196,7 +1210,7 @@ function totalScore(qi) {
 function allAnswered(qi) { return state.answers[qi].every(a => a !== null); }
 
 function computeScores() {
-  return QUIZZES.map((q, i) => ({ type: q.type, score: totalScore(i) }))
+  return quizOrder.map((qi, i) => ({ type: QUIZZES[qi].type, score: totalScore(i) }))
     .sort((a, b) => b.score - a.score);
 }
 
@@ -1287,7 +1301,7 @@ function renderIntro() {
 }
 
 function renderQuiz() {
-  const q = QUIZZES[state.page];
+  const q = orderedQuiz(state.page);
   const vars = selectedVariants[state.page];
   const pctFill = (state.page / QUIZZES.length) * 100;
   const complete = allAnswered(state.page);
@@ -1309,7 +1323,7 @@ function renderQuiz() {
   return `<div class="screen quiz">
     <div class="progress-bar"><div class="progress-fill" style="width:${pctFill}%"></div></div>
     <div class="quiz-header">
-      <div class="quiz-badge">${q.id}</div>
+      <div class="quiz-badge">${state.page + 1}</div>
       <div class="quiz-title-block">
         <div class="quiz-sub">Quiz ${state.page+1} of ${QUIZZES.length}</div>
         <div class="quiz-heading">How much does each statement resonate?</div>
@@ -1521,6 +1535,7 @@ function retake() {
     tbPair: null, tbAnswers: [null, null, null], expandedType: null
   };
   selectedVariants = null;
+  quizOrder = null;
   render();
   scroll(0, 0);
 }
