@@ -169,7 +169,6 @@
   /* ── QUIZ ── */
   .quiz {
     padding-top: 3rem;
-    animation: fadeUp 0.4s ease forwards;
   }
 
   .quiz-header {
@@ -280,7 +279,7 @@
   .opt:hover { border-color: var(--border-hover); color: var(--text-soft); background: var(--bg-3); }
   .opt.selected.agree { background: var(--accent); border-color: var(--accent); color: var(--bg); }
   .opt.selected.neutral { background: var(--bg-3); border-color: var(--border-hover); color: var(--text); }
-  .opt.selected.disagree { background: var(--surface); border-color: var(--border); color: var(--text-soft); }
+  .opt.selected.disagree { background: transparent; border-color: var(--accent); color: var(--accent); }
 
   /* Nav */
   .nav {
@@ -703,7 +702,33 @@ function animateBars() {
 }
 
 function startQuiz() { state.screen = 'quiz'; state.page = 0; render(); scroll(0,0); }
-function pick(qi, si, oi) { state.answers[qi][si] = oi; render(); }
+function pick(qi, si, oi) {
+  state.answers[qi][si] = oi;
+  // Surgical update — only touch the affected statement, not the whole page
+  const stmtEls = document.querySelectorAll('.statement');
+  if (stmtEls[si]) {
+    stmtEls[si].classList.add('answered');
+    stmtEls[si].querySelector('.stmt-text').style.color = '';
+    const opts = stmtEls[si].querySelectorAll('.opt');
+    opts.forEach((btn, idx) => {
+      btn.classList.toggle('selected', idx === oi);
+    });
+  }
+  // Update nav area in case this completes the page
+  const complete = allAnswered(qi);
+  const isLast = state.page === QUIZZES.length - 1;
+  const nav = document.querySelector('.nav');
+  if (nav) {
+    const right = nav.querySelector('.btn.primary, .incomplete-hint');
+    if (complete && right && right.classList.contains('incomplete-hint')) {
+      const btn = document.createElement('button');
+      btn.className = 'btn primary';
+      btn.textContent = isLast ? 'See my type' : 'Next';
+      btn.setAttribute('onclick', isLast ? 'finish()' : 'goPage(1)');
+      right.replaceWith(btn);
+    }
+  }
+}
 function goPage(d) { state.page = Math.max(0, Math.min(QUIZZES.length-1, state.page+d)); render(); window.scrollTo({top:0,behavior:'smooth'}); }
 function finish() { state.screen = 'result'; render(); window.scrollTo({top:0,behavior:'smooth'}); }
 function retake() { state.screen='intro'; state.page=0; state.answers=QUIZZES.map(q=>new Array(q.statements.length).fill(null)); render(); scroll(0,0); }
